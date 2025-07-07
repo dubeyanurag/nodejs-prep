@@ -1,0 +1,23 @@
+User-agent: *
+Allow: /
+
+# Sitemap location (update with your actual domain)
+Sitemap: https://dubeyanurag.github.io/nodejs-prep/sitemap.xml
+
+# Disallow build artifacts and internal files
+Disallow: /_next/
+Disallow: /api/
+Disallow: /*.json$
+
+# Allow all content and educational materials
+Allow: /nodejs-core/
+Allow: /databases/
+Allow: /system-design/
+Allow: /devops/
+Allow: /ood/
+Allow: /messaging/
+Allow: /security-monitoring/
+Allow: /flashcards/
+Allow: /search/
+Allow: /progress/
+Allow: /quick-reference/

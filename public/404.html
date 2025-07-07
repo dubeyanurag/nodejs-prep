@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Node.js Interview Prep - Page Not Found</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 3rem;
+            border-radius: 1rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 500px;
+            margin: 2rem;
+        }
+        h1 {
+            color: #2d3748;
+            font-size: 3rem;
+            margin: 0 0 1rem 0;
+            font-weight: 700;
+        }
+        h2 {
+            color: #4a5568;
+            font-size: 1.5rem;
+            margin: 0 0 2rem 0;
+            font-weight: 400;
+        }
+        p {
+            color: #718096;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .code {
+            background: #f7fafc;
+            color: #2d3748;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-family: 'Monaco', 'Consolas', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>404</h1>
+        <h2>Page Not Found</h2>
+        <p>
+            The page you're looking for doesn't exist. This might be because:
+        </p>
+        <ul style="text-align: left; color: #718096; margin-bottom: 2rem;">
+            <li>The URL was typed incorrectly</li>
+            <li>The page has been moved or deleted</li>
+            <li>You followed a broken link</li>
+        </ul>
+        <a href="/" class="btn">Go to Homepage</a>
+        
+        <script>
+            // Simple client-side routing for GitHub Pages
+            // This helps handle direct navigation to routes in a SPA
+            (function() {
+                var path = window.location.pathname;
+                var segments = path.split('/').filter(Boolean);
+                
+                // If this looks like it might be a valid route, try redirecting
+                if (segments.length > 0 && segments.length <= 2) {
+                    // Give it a moment, then redirect to home
+                    setTimeout(function() {
+                        window.location.href = '/';
+                    }, 3000);
+                }
+            })();
+        </script>
+    </div>
+</body>
+</html>
