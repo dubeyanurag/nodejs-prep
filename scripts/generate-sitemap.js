@@ -10,6 +10,11 @@ const path = require('path');
 
 // Configuration
 const SITE_URL = process.env.SITE_URL || 'https://[your-username].github.io/[your-repo-name]';
+
+// Check if we have a valid URL
+if (SITE_URL.includes('[your-username]') || SITE_URL.includes('[your-repo-name]')) {
+  console.warn('⚠️  Warning: Using default site URL. Please set the SITE_URL environment variable or run setup-deployment.sh script.');
+}
 const BUILD_DIR = path.join(__dirname, '../out');
 const SITEMAP_PATH = path.join(BUILD_DIR, 'sitemap.xml');
 

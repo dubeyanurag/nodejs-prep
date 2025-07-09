@@ -68,9 +68,9 @@ describe('DetailedAnswer', () => {
     expect(screen.getByText('Mistakes')).toBeInTheDocument();
     expect(screen.getByText('Interview Tips')).toBeInTheDocument();
     
-    // Check counts in tabs
-    expect(screen.getByText('2')).toBeInTheDocument(); // alternatives count
-    expect(screen.getByText('2')).toBeInTheDocument(); // mistakes count (appears twice)
+    // Check counts in tabs - use getAllByText since there are multiple "2"s
+    const countElements = screen.getAllByText('2');
+    expect(countElements.length).toBeGreaterThanOrEqual(2); // alternatives and mistakes counts
   });
 
   it('shows explanation tab by default', () => {
@@ -95,8 +95,10 @@ describe('DetailedAnswer', () => {
     
     fireEvent.click(screen.getByText('Alternatives'));
     
-    expect(screen.getByText('Advantages')).toBeInTheDocument();
-    expect(screen.getByText('Disadvantages')).toBeInTheDocument();
+    const advantagesElements = screen.getAllByText('Advantages');
+    const disadvantagesElements = screen.getAllByText('Disadvantages');
+    expect(advantagesElements.length).toBeGreaterThanOrEqual(1);
+    expect(disadvantagesElements.length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText('Faster execution')).toBeInTheDocument();
     expect(screen.getByText('More complex')).toBeInTheDocument();
   });

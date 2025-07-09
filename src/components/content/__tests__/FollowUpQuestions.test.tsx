@@ -44,8 +44,9 @@ describe('FollowUpQuestions', () => {
   it('filters questions by category', () => {
     render(<FollowUpQuestions questions={mockFollowUpQuestions} />);
     
-    // Click on depth category filter
-    fireEvent.click(screen.getByText(/🔍 depth/i));
+    // Click on depth category filter - use the button element
+    const depthButton = screen.getAllByText(/🔍 depth/i)[0]; // Get the first one (the filter button)
+    fireEvent.click(depthButton);
     
     // Should show only 1 question
     expect(screen.getByText('(1 questions)')).toBeInTheDocument();
@@ -98,9 +99,9 @@ describe('FollowUpQuestions', () => {
     render(<FollowUpQuestions questions={mockFollowUpQuestions} />);
     
     // Check for category filters with icons
-    expect(screen.getByText(/🔍 depth/i)).toBeInTheDocument();
-    expect(screen.getByText(/⚠️ edge-case/i)).toBeInTheDocument();
-    expect(screen.getByText(/⚡ optimization/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/🔍 depth/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/⚠️ edge-case/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/⚡ optimization/i).length).toBeGreaterThanOrEqual(1);
   });
 
   it('shows difficulty levels correctly', () => {

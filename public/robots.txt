@@ -1,8 +1,8 @@
 User-agent: *
 Allow: /
 
-# Sitemap location (update with your actual domain)
-Sitemap: https://dubeyanurag.github.io/nodejs-prep/sitemap.xml
+# Sitemap location
+Sitemap: https://[your-username].github.io/[your-repo-name]/sitemap.xml
 
 # Disallow build artifacts and internal files
 Disallow: /_next/

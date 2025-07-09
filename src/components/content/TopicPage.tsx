@@ -111,30 +111,31 @@ export default function TopicPage({ topic, categorySlug = '', className = '' }: 
                 </div>
               </section>
 
-            {/* Interview Q&A Section */}
-            {topic.questions.length > 0 && (
-              <section id="qa" className="scroll-mt-8">
-                <InterviewQASection questions={topic.questions} />
-              </section>
-            )}
-          </main>
+              {/* Interview Q&A Section */}
+              {topic.questions.length > 0 && (
+                <section id="qa" className="scroll-mt-8">
+                  <InterviewQASection questions={topic.questions} />
+                </section>
+              )}
+            </main>
 
-          {/* Topic Navigation */}
-          <div className="mt-8 pt-8 border-t border-gray-200">
-            <TopicNavigation 
-              currentTopicId={topic.id} 
-              categorySlug={categorySlug}
-            />
+            {/* Topic Navigation */}
+            <div className="mt-8 pt-8 border-t border-gray-200">
+              <TopicNavigation 
+                currentTopicId={topic.id} 
+                categorySlug={categorySlug}
+              />
+            </div>
           </div>
-        </div>
 
-        {/* Sidebar */}
-        <div className="lg:w-80 flex-shrink-0">
-          <div className="sticky top-6 space-y-6">
-            <ProgressTracker 
-              topicId={topic.id}
-              topicTitle={topic.title}
-            />
+          {/* Sidebar */}
+          <div className="lg:w-80 flex-shrink-0">
+            <div className="sticky top-6 space-y-6">
+              <ProgressTracker 
+                topicId={topic.id}
+                topicTitle={topic.title}
+              />
+            </div>
           </div>
         </div>
       </div>
