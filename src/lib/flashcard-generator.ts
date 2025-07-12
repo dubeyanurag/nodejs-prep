@@ -412,6 +412,7 @@ export class DifficultyProgressionEngine {
     
     // Categorize flashcards by user performance
     const strugglingCards: GeneratedFlashcard[] = [];
+    const learningCards: GeneratedFlashcard[] = [];
     const masteredCards: GeneratedFlashcard[] = [];
     const newCards: GeneratedFlashcard[] = [];
 
@@ -425,8 +426,10 @@ export class DifficultyProgressionEngine {
         
         if (cardProgress.status === 'mastered') {
           masteredCards.push(card);
-        } else if (successRate < 0.6) {
+        } else if (successRate < 0.7) {
           strugglingCards.push(card);
+        } else {
+          learningCards.push(card);
         }
       }
     });
@@ -438,10 +441,14 @@ export class DifficultyProgressionEngine {
     const strugglingCount = Math.min(Math.floor(targetCount * 0.4), strugglingCards.length);
     selectedCards.push(...strugglingCards.slice(0, strugglingCount));
     
-    // Add new cards (50% of selection)
-    const newCount = Math.min(Math.floor(targetCount * 0.5), newCards.length);
+    // Add new cards (40% of selection)
+    const newCount = Math.min(Math.floor(targetCount * 0.4), newCards.length);
     selectedCards.push(...newCards.slice(0, newCount));
     
+    // Add some learning cards (10% of selection)
+    const learningCount = Math.min(Math.floor(targetCount * 0.1), learningCards.length);
+    selectedCards.push(...learningCards.slice(0, learningCount));
+
     // Fill remaining with review cards (10% of selection)
     const reviewCount = targetCount - selectedCards.length;
     const reviewCards = masteredCards
@@ -452,6 +459,13 @@ export class DifficultyProgressionEngine {
       .slice(0, reviewCount);
     
     selectedCards.push(...reviewCards);
+
+    // If there's still space, add more new cards
+    if (selectedCards.length < targetCount) {
+      const remainingSpace = targetCount - selectedCards.length;
+      const moreNewCards = newCards.slice(newCount, newCount + remainingSpace);
+      selectedCards.push(...moreNewCards);
+    }
 
     return selectedCards;
   }
