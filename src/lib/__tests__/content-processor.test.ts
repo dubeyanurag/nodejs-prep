@@ -191,7 +191,7 @@ graph TD
     expect(topicContent.title).toBe('Event Loop');
     expect(topicContent.category).toBe('Node.js');
     expect(topicContent.difficulty).toBe('intermediate');
-    expect(topicContent.examples).toHaveLength(1);
+    expect(topicContent.examples).toHaveLength(2);
     expect(topicContent.diagrams).toHaveLength(1);
     expect(topicContent.sections[0].keyPoints).toContain('Single-threaded execution');
   });
