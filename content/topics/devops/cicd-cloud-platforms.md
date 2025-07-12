@@ -162,8 +162,8 @@ services:
     ports:
       - "3000:3000"
 ```
-## Pip
-eline Design Patterns
+## Pipeline Design Patterns
+
 
 ### Trunk-Based Development vs. GitFlow
 
