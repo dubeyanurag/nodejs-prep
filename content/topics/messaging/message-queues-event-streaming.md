@@ -1153,8 +1153,7 @@ class OrderSagaOrchestrator {
   }
 }
 ```
-## Syst
-em Diagrams
+## System Diagrams
 
 ### Message Queue Architecture
 
