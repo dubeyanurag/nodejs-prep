@@ -166,6 +166,17 @@ describe('DifficultyProgressionEngine', () => {
           sourceType: 'question' as const,
           sourceId: 'q3',
           confidence: 0.7
+        },
+        {
+          id: 'card4',
+          question: 'Test 4',
+          answer: 'Answer 4',
+          category: 'Test',
+          difficulty: 'beginner' as const,
+          tags: [],
+          sourceType: 'question' as const,
+          sourceId: 'q4',
+          confidence: 0.9
         }
       ];
 

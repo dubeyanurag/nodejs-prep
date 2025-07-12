@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import TopicPage from '../TopicPage';
 import { TopicContent } from '@/types/content';
@@ -68,25 +68,26 @@ describe('TopicPage', () => {
   it('renders topic header with title and metadata', () => {
     render(<TopicPage topic={mockTopic} />);
     
-    expect(screen.getByText('Test Topic')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Test Topic', level: 1 })).toBeInTheDocument();
     expect(screen.getByText('Node.js')).toBeInTheDocument();
     expect(screen.getByText('Advanced')).toBeInTheDocument();
   });
 
   it('displays topic statistics correctly', () => {
-    render(<TopicPage topic={mockTopic} />);
+    const { getByTestId } = render(<TopicPage topic={mockTopic} />);
+    const statsContainer = getByTestId('topic-stats');
     
-    expect(screen.getByText('2 sections')).toBeInTheDocument();
-    expect(screen.getByText('1 questions')).toBeInTheDocument();
-    expect(screen.getByText('0 examples')).toBeInTheDocument();
+    expect(within(statsContainer).getByText(/2 sections/)).toBeInTheDocument();
+    expect(within(statsContainer).getByText(/1 questions/)).toBeInTheDocument();
+    expect(within(statsContainer).getByText(/0 examples/)).toBeInTheDocument();
   });
 
   it('renders navigation tabs', () => {
     render(<TopicPage topic={mockTopic} />);
     
-    expect(screen.getByText('Theory & Concepts')).toBeInTheDocument();
-    expect(screen.getByText('Code Examples')).toBeInTheDocument();
-    expect(screen.getByText('Interview Q&A')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Theory & Concepts' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Code Examples' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Interview Q&A' })).toBeInTheDocument();
   });
 
   it('renders all content sections', () => {
@@ -97,10 +98,11 @@ describe('TopicPage', () => {
   });
 
   it('renders interview Q&A section when questions exist', () => {
-    render(<TopicPage topic={mockTopic} />);
+    const { getByTestId } = render(<TopicPage topic={mockTopic} />);
     
-    expect(screen.getByTestId('interview-qa-section')).toBeInTheDocument();
-    expect(screen.getByText('1 questions')).toBeInTheDocument();
+    const qaSection = getByTestId('interview-qa-section');
+    expect(qaSection).toBeInTheDocument();
+    expect(within(qaSection).getByText('1 questions')).toBeInTheDocument();
   });
 
   it('does not render interview Q&A section when no questions exist', () => {

@@ -19,7 +19,7 @@ const customJestConfig = {
     '!src/**/*.stories.{js,jsx,ts,tsx}',
   ],
   transformIgnorePatterns: [
-    'node_modules/(?!(remark|remark-parse|remark-html|remark-gfm|unified|bail|is-plain-obj|trough|vfile|unist-util-stringify-position|mdast-util-to-hast|mdast-util-gfm|micromark|decode-named-character-reference|character-entities)/)'
+    "node_modules/(?!(unified|remark|remark-parse|remark-gfm|remark-html|rehype-raw|unist-util-visit)/)"
   ],
   testTimeout: 10000,
   verbose: true,

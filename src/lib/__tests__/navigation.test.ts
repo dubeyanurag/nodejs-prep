@@ -228,7 +228,26 @@ describe('RouterManager', () => {
               slug: 'closures',
               category: 'JavaScript Fundamentals',
               difficulty: 'intermediate',
-              content: {} as TopicContent,
+              content: {
+                id: 'closures',
+                title: 'Closures',
+                category: 'JavaScript Fundamentals',
+                difficulty: 'intermediate',
+                sections: [
+                  {
+                    id: 'closures-intro',
+                    title: 'Introduction to Closures',
+                    content: 'Closures are...',
+                    codeExamples: [],
+                    diagrams: [],
+                    keyPoints: []
+                  }
+                ],
+                questions: [],
+                examples: [],
+                diagrams: [],
+                flashcards: []
+              } as TopicContent,
               metadata: {} as any
             }
           ],
