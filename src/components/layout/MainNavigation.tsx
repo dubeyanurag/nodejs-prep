@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { NavigationItem } from '../../types/content';
 import { navigationManager } from '../../lib/navigation';
 import { useSearchSuggestions } from '../../lib/hooks/useSearch';
+import { withBasePath } from '../../lib/utils/path';
 
 interface MainNavigationProps {
   className?: string;
@@ -26,7 +27,7 @@ export default function MainNavigation({ className = '' }: MainNavigationProps) 
         <div className="flex justify-between items-center h-16">
           {/* Logo and Brand */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2">
+            <Link href={withBasePath("/")} className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">NI</span>
               </div>
@@ -44,7 +45,7 @@ export default function MainNavigation({ className = '' }: MainNavigationProps) 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <Link
-              href="/"
+              href={withBasePath("/")}
               className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                 pathname === '/'
                   ? 'text-blue-600 bg-blue-50'
@@ -58,7 +59,7 @@ export default function MainNavigation({ className = '' }: MainNavigationProps) 
             {navigationTree.map((category) => (
               <div key={category.id} className="relative group">
                 <Link
-                  href={`/${category.slug}`}
+                  href={withBasePath(`/${category.slug}`)}
                   className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                     isActiveRoute(category.slug)
                       ? 'text-blue-600 bg-blue-50'
@@ -75,7 +76,7 @@ export default function MainNavigation({ className = '' }: MainNavigationProps) 
                       {category.children.slice(0, 8).map((topic) => (
                         <Link
                           key={topic.id}
-                          href={`/${category.slug}/${topic.slug}`}
+                          href={withBasePath(`/${category.slug}/${topic.slug}`)}
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600"
                         >
                           {topic.title}
@@ -83,7 +84,7 @@ export default function MainNavigation({ className = '' }: MainNavigationProps) 
                       ))}
                       {category.children.length > 8 && (
                         <Link
-                          href={`/${category.slug}`}
+                          href={withBasePath(`/${category.slug}`)}
                           className="block px-4 py-2 text-sm text-blue-600 font-medium border-t border-gray-100 mt-2"
                         >
                           View all {category.children.length} topics →
@@ -97,7 +98,7 @@ export default function MainNavigation({ className = '' }: MainNavigationProps) 
 
             {/* Utility Links */}
             <Link
-              href="/search"
+              href={withBasePath("/search")}
               className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                 pathname === '/search'
                   ? 'text-blue-600 bg-blue-50'
@@ -108,7 +109,7 @@ export default function MainNavigation({ className = '' }: MainNavigationProps) 
             </Link>
 
             <Link
-              href="/flashcards"
+              href={withBasePath("/flashcards")}
               className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                 pathname === '/flashcards'
                   ? 'text-blue-600 bg-blue-50'
@@ -119,7 +120,7 @@ export default function MainNavigation({ className = '' }: MainNavigationProps) 
             </Link>
 
             <Link
-              href="/progress"
+              href={withBasePath("/progress")}
               className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                 pathname === '/progress'
                   ? 'text-blue-600 bg-blue-50'
@@ -156,7 +157,7 @@ export default function MainNavigation({ className = '' }: MainNavigationProps) 
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-gray-200">
               <Link
-                href="/"
+                href={withBasePath("/")}
                 className={`block px-3 py-2 rounded-md text-base font-medium ${
                   pathname === '/'
                     ? 'text-blue-600 bg-blue-50'
@@ -170,7 +171,7 @@ export default function MainNavigation({ className = '' }: MainNavigationProps) 
               {navigationTree.map((category) => (
                 <div key={category.id}>
                   <Link
-                    href={`/${category.slug}`}
+                    href={withBasePath(`/${category.slug}`)}
                     className={`block px-3 py-2 rounded-md text-base font-medium ${
                       isActiveRoute(category.slug)
                         ? 'text-blue-600 bg-blue-50'
@@ -184,7 +185,7 @@ export default function MainNavigation({ className = '' }: MainNavigationProps) 
               ))}
 
               <Link
-                href="/search"
+                href={withBasePath("/search")}
                 className={`block px-3 py-2 rounded-md text-base font-medium ${
                   pathname === '/search'
                     ? 'text-blue-600 bg-blue-50'
@@ -196,7 +197,7 @@ export default function MainNavigation({ className = '' }: MainNavigationProps) 
               </Link>
 
               <Link
-                href="/flashcards"
+                href={withBasePath("/flashcards")}
                 className={`block px-3 py-2 rounded-md text-base font-medium ${
                   pathname === '/flashcards'
                     ? 'text-blue-600 bg-blue-50'
@@ -208,7 +209,7 @@ export default function MainNavigation({ className = '' }: MainNavigationProps) 
               </Link>
 
               <Link
-                href="/progress"
+                href={withBasePath("/progress")}
                 className={`block px-3 py-2 rounded-md text-base font-medium ${
                   pathname === '/progress'
                     ? 'text-blue-600 bg-blue-50'
@@ -235,7 +236,7 @@ function QuickSearchBar() {
 
   const handleSearch = (searchQuery: string) => {
     if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      router.push(withBasePath(`/search?q=${encodeURIComponent(searchQuery.trim())}`));
       setShowSuggestions(false);
       setQuery('');
     }

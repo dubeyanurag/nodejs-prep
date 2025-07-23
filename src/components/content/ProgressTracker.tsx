@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useProgress } from '../../lib/hooks/useProgress';
 import BookmarkButton from './BookmarkButton';
+import { withBasePath } from '../../lib/utils/path';
 
 interface ProgressTrackerProps {
   topicId: string;
@@ -175,7 +176,7 @@ export function TopicNavigation({
       <div className="flex-1">
         {adjacentTopics.previous && (
           <a
-            href={`/${categorySlug}/${adjacentTopics.previous.slug}`}
+            href={withBasePath(`/${categorySlug}/${adjacentTopics.previous.slug}`)}
             className="group flex items-center space-x-2 text-sm text-gray-600 hover:text-blue-600 transition-colors"
           >
             <svg className="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -205,7 +206,7 @@ export function TopicNavigation({
       <div className="flex-1 flex justify-end">
         {adjacentTopics.next && (
           <a
-            href={`/${categorySlug}/${adjacentTopics.next.slug}`}
+            href={withBasePath(`/${categorySlug}/${adjacentTopics.next.slug}`)}
             className="group flex items-center space-x-2 text-sm text-gray-600 hover:text-blue-600 transition-colors"
           >
             <div className="text-right">

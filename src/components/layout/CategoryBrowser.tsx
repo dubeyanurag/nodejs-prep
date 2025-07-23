@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { DifficultyLevel } from '../../types/content';
 import { CategoryInfo } from '../../lib/content-loader';
+import { withBasePath } from '../../lib/utils/path';
 
 interface CategoryBrowserProps {
   categories?: CategoryInfo[];
@@ -165,7 +166,7 @@ export default function CategoryBrowser({
               return (
                 <Link
                   key={category.slug}
-                  href={`/${category.slug}`}
+                  href={withBasePath(`/${category.slug}`)}
                   className="block bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md hover:border-blue-300 transition-all duration-200 group"
                 >
                   <div className="flex items-start justify-between mb-3">

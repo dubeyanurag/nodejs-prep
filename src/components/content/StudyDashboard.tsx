@@ -6,6 +6,7 @@ import { useProgress } from '../../lib/hooks/useProgress';
 import { navigationManager } from '../../lib/navigation';
 import { NavigationItem } from '../../types/content';
 import BookmarkButton, { BookmarkList } from './BookmarkButton';
+import { withBasePath } from '../../lib/utils/path';
 
 interface StudyDashboardProps {
   className?: string;
@@ -104,7 +105,7 @@ export default function StudyDashboard({ className = '' }: StudyDashboardProps) 
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900">Recommended for You</h3>
               <Link
-                href="/progress"
+                href={withBasePath("/progress")}
                 className="text-sm text-blue-600 hover:text-blue-800"
               >
                 View all →
@@ -143,7 +144,7 @@ export default function StudyDashboard({ className = '' }: StudyDashboardProps) 
                       }`} />
                       <div>
                         <Link
-                          href={`/${topic.parentId}/${topic.slug}`}
+                          href={withBasePath(`/${topic.parentId}/${topic.slug}`)}
                           className="font-medium text-gray-900 hover:text-blue-600"
                         >
                           {topic.title}
@@ -245,7 +246,7 @@ export default function StudyDashboard({ className = '' }: StudyDashboardProps) 
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900">Bookmarks</h3>
               <Link
-                href="/bookmarks"
+                href={withBasePath("/bookmarks")}
                 className="text-sm text-blue-600 hover:text-blue-800"
               >
                 View all →
@@ -283,7 +284,7 @@ function RecommendationCard({ topic, onStartStudy }: RecommendationCardProps) {
     <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between mb-2">
         <Link
-          href={`/${topic.parentId}/${topic.slug}`}
+          href={withBasePath(`/${topic.parentId}/${topic.slug}`)}
           className="font-medium text-gray-900 hover:text-blue-600 line-clamp-2"
         >
           {topic.title}

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { withBasePath } from '../../lib/utils/path';
 import { BreadcrumbItem } from '../../types/content';
 
 interface BreadcrumbsProps {
@@ -20,7 +21,7 @@ export default function Breadcrumbs({ items, className = '' }: BreadcrumbsProps)
         {/* Home breadcrumb */}
         <li className="inline-flex items-center">
           <Link
-            href="/"
+            href={withBasePath("/")}
             className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
           >
             <svg
@@ -61,7 +62,7 @@ export default function Breadcrumbs({ items, className = '' }: BreadcrumbsProps)
                   </span>
                 ) : (
                   <Link
-                    href={href}
+                    href={withBasePath(href)}
                     className="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ml-2 transition-colors"
                   >
                     {item.title}

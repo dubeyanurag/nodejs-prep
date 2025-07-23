@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { NavigationItem } from '../../types/content';
+import { withBasePath } from '../../lib/utils/path';
 import { navigationManager, progressTracker } from '../../lib/navigation';
 
 interface TopicNavigationProps {
@@ -24,7 +25,7 @@ export default function TopicNavigation({
       <div className="flex-1">
         {previous ? (
           <Link
-            href={`/${categorySlug}/${previous.slug}`}
+            href={withBasePath(`/${categorySlug}/${previous.slug}`)}
             className="group flex items-center text-sm text-gray-600 hover:text-blue-600 transition-colors"
           >
             <svg
@@ -53,7 +54,7 @@ export default function TopicNavigation({
       {/* Category Link */}
       <div className="flex-shrink-0 mx-4">
         <Link
-          href={`/${categorySlug}`}
+          href={withBasePath(`/${categorySlug}`)}
           className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 hover:text-blue-600 transition-colors"
         >
           <svg
@@ -77,7 +78,7 @@ export default function TopicNavigation({
       <div className="flex-1 flex justify-end">
         {next ? (
           <Link
-            href={`/${categorySlug}/${next.slug}`}
+            href={withBasePath(`/${categorySlug}/${next.slug}`)}
             className="group flex items-center text-sm text-gray-600 hover:text-blue-600 transition-colors"
           >
             <div className="text-right">

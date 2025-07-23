@@ -3,6 +3,7 @@ import Link from 'next/link';
 import AppLayout from '../../components/layout/AppLayout';
 import { PageHeader } from '../../components/layout/AppLayout';
 import { contentLoaderServer } from '../../lib/content-loader-server';
+import { withBasePath } from '../../lib/utils/path';
 
 export default function DemoPage() {
   const categories = contentLoaderServer.getCategories();
@@ -29,7 +30,7 @@ export default function DemoPage() {
               <div key={category.slug} className="bg-white border border-gray-200 rounded-lg p-4">
                 <h3 className="font-semibold text-lg mb-2">
                   <Link 
-                    href={`/${category.slug}`}
+                    href={withBasePath(`/${category.slug}`)}
                     className="text-blue-600 hover:text-blue-700"
                   >
                     {category.title}
@@ -45,7 +46,7 @@ export default function DemoPage() {
                   {category.topics.slice(0, 3).map(topic => (
                     <div key={topic.slug} className="text-sm">
                       <Link 
-                        href={`/${category.slug}/${topic.slug}`}
+                        href={withBasePath(`/${category.slug}/${topic.slug}`)}
                         className="text-blue-600 hover:text-blue-700"
                       >
                         • {topic.title}
@@ -96,7 +97,7 @@ export default function DemoPage() {
                     <tr key={`${topic.category}-${topic.slug}`} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <Link 
-                          href={`/${topic.category}/${topic.slug}`}
+                          href={withBasePath(`/${topic.category}/${topic.slug}`)}
                           className="text-blue-600 hover:text-blue-700 font-medium"
                         >
                           {topic.title}
@@ -104,7 +105,7 @@ export default function DemoPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         <Link 
-                          href={`/${topic.category}`}
+                          href={withBasePath(`/${topic.category}`)}
                           className="text-gray-600 hover:text-gray-700"
                         >
                           {categories.find(cat => cat.slug === topic.category)?.title}
@@ -154,7 +155,7 @@ export default function DemoPage() {
                 {nodejsTopics.map(topic => (
                   <div key={`${topic.category}-${topic.slug}`} className="text-sm">
                     <Link 
-                      href={`/${topic.category}/${topic.slug}`}
+                      href={withBasePath(`/${topic.category}/${topic.slug}`)}
                       className="text-blue-600 hover:text-blue-700"
                     >
                       {topic.title}
@@ -171,7 +172,7 @@ export default function DemoPage() {
                 {databaseTopics.map(topic => (
                   <div key={`${topic.category}-${topic.slug}`} className="text-sm">
                     <Link 
-                      href={`/${topic.category}/${topic.slug}`}
+                      href={withBasePath(`/${topic.category}/${topic.slug}`)}
                       className="text-blue-600 hover:text-blue-700"
                     >
                       {topic.title}
@@ -188,7 +189,7 @@ export default function DemoPage() {
                 {intermediateTopics.slice(0, 10).map(topic => (
                   <div key={`${topic.category}-${topic.slug}`} className="text-sm">
                     <Link 
-                      href={`/${topic.category}/${topic.slug}`}
+                      href={withBasePath(`/${topic.category}/${topic.slug}`)}
                       className="text-blue-600 hover:text-blue-700"
                     >
                       {topic.title}
@@ -222,7 +223,7 @@ export default function DemoPage() {
                     <div key={`${topic.category}-${topic.slug}`} className="border-l-4 border-blue-500 pl-4">
                       <h4 className="font-medium text-gray-900">
                         <Link 
-                          href={`/${topic.category}/${topic.slug}`}
+                          href={withBasePath(`/${topic.category}/${topic.slug}`)}
                           className="text-blue-600 hover:text-blue-700"
                         >
                           {topic.title}
@@ -249,7 +250,7 @@ export default function DemoPage() {
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Quick Navigation</h2>
           <div className="flex flex-wrap gap-4">
             <Link 
-              href="/"
+              href={withBasePath("/")}
               className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
             >
               ← Back to Home
@@ -257,7 +258,7 @@ export default function DemoPage() {
             {categories.map(category => (
               <Link 
                 key={category.slug}
-                href={`/${category.slug}`}
+                href={withBasePath(`/${category.slug}`)}
                 className="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
               >
                 {category.title}

@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { SearchResult, SearchableContent } from '../../lib/search';
+import { withBasePath } from '../../lib/utils/path';
 
 interface SearchResultsProps {
   results: SearchResult[];
@@ -97,13 +98,13 @@ function SearchResultCard({ result, onClick, rank }: SearchResultCardProps) {
   const getResultUrl = (item: SearchableContent) => {
     switch (item.type) {
       case 'topic':
-        return `/${item.category}/${item.slug}`;
+        return withBasePath(`/${item.category}/${item.slug}`);
       case 'question':
-        return `/${item.category}/${item.slug || item.id}#questions`;
+        return withBasePath(`/${item.category}/${item.slug || item.id}#questions`);
       case 'example':
-        return `/${item.category}/${item.slug || item.id}#examples`;
+        return withBasePath(`/${item.category}/${item.slug || item.id}#examples`);
       case 'flashcard':
-        return `/flashcards?category=${item.category}`;
+        return withBasePath(`/flashcards?category=${item.category}`);
       default:
         return '#';
     }

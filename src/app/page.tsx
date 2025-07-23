@@ -4,6 +4,7 @@ import AppLayout from '../components/layout/AppLayout';
 import CategoryBrowser from '../components/layout/CategoryBrowser';
 import StudyDashboard from '../components/content/StudyDashboard';
 import { contentLoaderServer } from '../lib/content-loader-server';
+import { withBasePath } from '../lib/utils/path';
 
 export default function Home() {
   // Get categories from content loader
@@ -25,7 +26,7 @@ export default function Home() {
             </p>
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
               <Link
-                href={categories.length > 0 ? `/${categories[0].slug}` : "/nodejs-core"}
+                href={withBasePath(categories.length > 0 ? `/${categories[0].slug}` : "/nodejs-core")}
                 className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
               >
                 Start Learning
@@ -34,7 +35,7 @@ export default function Home() {
                 </svg>
               </Link>
               <Link
-                href="/search"
+                href={withBasePath("/search")}
                 className="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors"
               >
                 <svg className="mr-2 w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -112,7 +113,7 @@ export default function Home() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Link
-                href="/flashcards"
+                href={withBasePath("/flashcards")}
                 className="block p-6 bg-white border border-gray-200 rounded-lg hover:shadow-md hover:border-blue-300 transition-all duration-200"
               >
                 <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mx-auto mb-4">
@@ -127,7 +128,7 @@ export default function Home() {
               </Link>
 
               <Link
-                href="/progress"
+                href={withBasePath("/progress")}
                 className="block p-6 bg-white border border-gray-200 rounded-lg hover:shadow-md hover:border-blue-300 transition-all duration-200"
               >
                 <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mx-auto mb-4">

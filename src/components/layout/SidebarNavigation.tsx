@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { NavigationItem, Category } from '../../types/content';
 import { navigationManager, progressTracker } from '../../lib/navigation';
+import { withBasePath } from '../../lib/utils/path';
 
 interface SidebarNavigationProps {
   currentCategory?: string;
@@ -56,7 +57,7 @@ export default function SidebarNavigation({
                 {/* Category Header */}
                 <div className="flex items-center justify-between">
                   <Link
-                    href={`/${category.slug}`}
+                    href={withBasePath(`/${category.slug}`)}
                     className={`flex-1 flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                       isActive
                         ? 'text-blue-600 bg-blue-50'
@@ -107,7 +108,7 @@ export default function SidebarNavigation({
                       return (
                         <Link
                           key={topic.id}
-                          href={`/${category.slug}/${topic.slug}`}
+                          href={withBasePath(`/${category.slug}/${topic.slug}`)}
                           className={`flex items-center px-3 py-2 text-sm rounded-md transition-colors group ${
                             isTopicActive
                               ? 'text-blue-600 bg-blue-50'
@@ -212,7 +213,7 @@ export function QuickLinks({ className = '' }: QuickLinksProps) {
                 return (
                   <Link
                     key={topicId}
-                    href={`/${topic.parentId}/${topic.slug}`}
+                    href={withBasePath(`/${topic.parentId}/${topic.slug}`)}
                     className="block text-xs text-blue-600 hover:text-blue-800 truncate"
                   >
                     {topic.title}
@@ -230,7 +231,7 @@ export function QuickLinks({ className = '' }: QuickLinksProps) {
             {recommendedTopics.map((topic) => (
               <Link
                 key={topic.id}
-                href={`/${topic.parentId}/${topic.slug}`}
+                href={withBasePath(`/${topic.parentId}/${topic.slug}`)}
                 className="block text-xs text-blue-600 hover:text-blue-800 truncate"
               >
                 {topic.title}
@@ -244,19 +245,19 @@ export function QuickLinks({ className = '' }: QuickLinksProps) {
           <h4 className="text-xs font-medium text-gray-700 mb-2">Quick Actions</h4>
           <div className="space-y-1">
             <Link
-              href="/search"
+              href={withBasePath("/search")}
               className="block text-xs text-blue-600 hover:text-blue-800"
             >
               Search Topics
             </Link>
             <Link
-              href="/flashcards"
+              href={withBasePath("/flashcards")}
               className="block text-xs text-blue-600 hover:text-blue-800"
             >
               Practice Flashcards
             </Link>
             <Link
-              href="/progress"
+              href={withBasePath("/progress")}
               className="block text-xs text-blue-600 hover:text-blue-800"
             >
               View Progress
