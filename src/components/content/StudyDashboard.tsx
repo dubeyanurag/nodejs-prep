@@ -3,9 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useProgress } from '../../lib/hooks/useProgress';
-import { navigationManager } from '../../lib/navigation';
 import { NavigationItem } from '../../types/content';
 import BookmarkButton, { BookmarkList } from './BookmarkButton';
+import { getNavigationManager } from '../../lib/navigation-sync';
 import { withBasePath } from '../../lib/utils/path';
 
 interface StudyDashboardProps {
@@ -20,9 +20,10 @@ export default function StudyDashboard({ className = '' }: StudyDashboardProps) 
 
   useEffect(() => {
     // Generate recommendations based on progress and prerequisites
+    const navigationManager = getNavigationManager();
     const allTopics = navigationManager.getAllTopics();
     const incompleteTopics = allTopics.filter(topic => !progress.completedTopics.has(topic.id));
-    
+
     // Sort by difficulty and prerequisites
     const sortedRecommendations = incompleteTopics
       .slice(0, 6)
@@ -50,7 +51,7 @@ export default function StudyDashboard({ className = '' }: StudyDashboardProps) 
   }, [progress.completedTopics, progress.studyTime]);
 
   const weeklyProgress = Math.min(100, (progress.studyTime.totalMinutes / weeklyGoal) * 100);
-  const dailyAverage = progress.studyTime.sessionCount > 0 
+  const dailyAverage = progress.studyTime.sessionCount > 0
     ? Math.round(progress.studyTime.totalMinutes / Math.max(1, progress.getStudyStreak()))
     : 0;
 
@@ -82,7 +83,7 @@ export default function StudyDashboard({ className = '' }: StudyDashboardProps) 
               <div>
                 <h3 className="font-medium text-green-900">Active Study Session</h3>
                 <p className="text-green-700 text-sm">
-                  Studying: {progress.currentSession.currentTopic} • 
+                  Studying: {progress.currentSession.currentTopic} •
                   {progress.currentSession.sessionMinutes} minutes
                 </p>
               </div>
@@ -111,7 +112,7 @@ export default function StudyDashboard({ className = '' }: StudyDashboardProps) 
                 View all →
               </Link>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {recommendations.slice(0, 4).map((topic) => (
                 <RecommendationCard
@@ -133,15 +134,14 @@ export default function StudyDashboard({ className = '' }: StudyDashboardProps) 
           {/* Recent Activity */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
-            
+
             {recentTopics.length > 0 ? (
               <div className="space-y-3">
                 {recentTopics.map((topic) => (
                   <div key={topic.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-md">
                     <div className="flex items-center space-x-3">
-                      <div className={`w-2 h-2 rounded-full ${
-                        progress.completedTopics.has(topic.id) ? 'bg-green-500' : 'bg-blue-500'
-                      }`} />
+                      <div className={`w-2 h-2 rounded-full ${progress.completedTopics.has(topic.id) ? 'bg-green-500' : 'bg-blue-500'
+                        }`} />
                       <div>
                         <Link
                           href={withBasePath(`/${topic.parentId}/${topic.slug}`)}
@@ -176,7 +176,7 @@ export default function StudyDashboard({ className = '' }: StudyDashboardProps) 
           {/* Weekly Progress */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Weekly Goal</h3>
-            
+
             <div className="mb-4">
               <div className="flex justify-between text-sm mb-2">
                 <span className="text-gray-600">Progress</span>
@@ -211,7 +211,7 @@ export default function StudyDashboard({ className = '' }: StudyDashboardProps) 
           {/* Quick Stats */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Stats</h3>
-            
+
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
@@ -220,7 +220,7 @@ export default function StudyDashboard({ className = '' }: StudyDashboardProps) 
                 </div>
                 <span className="font-medium">{progress.completedTopics.size}</span>
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <span className="text-yellow-500">🔖</span>
@@ -230,7 +230,7 @@ export default function StudyDashboard({ className = '' }: StudyDashboardProps) 
                   {progress.bookmarkedTopics.size + progress.bookmarkedQuestions.size}
                 </span>
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <span className="text-green-500">📊</span>
@@ -252,13 +252,13 @@ export default function StudyDashboard({ className = '' }: StudyDashboardProps) 
                 View all →
               </Link>
             </div>
-            
+
             <div className="space-y-4">
               <div>
                 <h4 className="text-sm font-medium text-gray-700 mb-2">Topics</h4>
                 <BookmarkList type="topic" limit={3} />
               </div>
-              
+
               <div>
                 <h4 className="text-sm font-medium text-gray-700 mb-2">Questions</h4>
                 <BookmarkList type="question" limit={3} />
@@ -291,11 +291,11 @@ function RecommendationCard({ topic, onStartStudy }: RecommendationCardProps) {
         </Link>
         <BookmarkButton id={topic.id} type="topic" size="sm" />
       </div>
-      
+
       <div className="text-sm text-gray-500 mb-3">
         {studyTime > 0 ? `${studyTime}m studied` : 'Not started'}
       </div>
-      
+
       <div className="flex items-center justify-between">
         <button
           onClick={onStartStudy}
@@ -303,7 +303,7 @@ function RecommendationCard({ topic, onStartStudy }: RecommendationCardProps) {
         >
           Start Studying
         </button>
-        
+
         {topic.priority && topic.priority > 0.8 && (
           <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded">
             High Priority
@@ -317,20 +317,20 @@ function RecommendationCard({ topic, onStartStudy }: RecommendationCardProps) {
 // Helper function to calculate topic priority based on prerequisites and difficulty
 function calculateTopicPriority(topic: NavigationItem, progress: any): number {
   let priority = 0.5; // Base priority
-  
+
   // Boost priority for topics that haven't been started
   const studyTime = progress.studyTime.topicTimeSpent[topic.id] || 0;
   if (studyTime === 0) {
     priority += 0.2;
   }
-  
+
   // Boost priority for bookmarked topics
   if (progress.bookmarkedTopics.has(topic.id)) {
     priority += 0.3;
   }
-  
+
   // Random factor to add variety
   priority += Math.random() * 0.1;
-  
+
   return Math.min(1, priority);
 }

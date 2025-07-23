@@ -5,6 +5,7 @@ import Link from 'next/link';
 import AppLayout from '../../components/layout/AppLayout';
 import { useProgress } from '../../lib/hooks/useProgress';
 import { navigationManager } from '../../lib/navigation';
+import { getNavigationManager } from '../../lib/navigation-sync';
 import { NavigationItem, Category } from '../../types/content';
 
 export default function ProgressPage() {
@@ -58,11 +59,11 @@ export default function ProgressPage() {
       estimatedStudyHours: sampleCategories.reduce((sum, cat) => sum + cat.estimatedHours, 0)
     };
 
-    navigationManager.setCurriculum(curriculum);
-    setNavigationTree(navigationManager.getNavigationTree());
+    const navManager = getNavigationManager();
+    setNavigationTree(navManager.getNavigationTree());
 
     // Generate recommendations based on progress
-    const allTopics = navigationManager.getAllTopics();
+    const allTopics = navManager.getAllTopics();
     const incompleteTopics = allTopics.filter(topic => !progress.completedTopics.has(topic.id));
     setRecommendations(incompleteTopics.slice(0, 5));
   }, [progress.completedTopics]);

@@ -1,5 +1,5 @@
 import { BreadcrumbItem } from '../types/content';
-import { navigationManager } from './navigation';
+import { getNavigationManager } from './navigation-sync';
 
 /**
  * Route configuration for the application
@@ -23,6 +23,7 @@ export class RouterManager {
    */
   generateRoutes(): Route[] {
     const routes: Route[] = [];
+    const navigationManager = getNavigationManager();
     const navigationTree = navigationManager.getNavigationTree();
 
     // Home route

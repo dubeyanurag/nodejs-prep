@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import MainNavigation from './MainNavigation';
 import SidebarNavigation from './SidebarNavigation';
 import Breadcrumbs from './Breadcrumbs';
-import { navigationManager } from '../../lib/navigation';
+import { getNavigationManager } from '../../lib/navigation-sync';
 import { BreadcrumbItem } from '../../types/content';
 
 interface AppLayoutProps {
@@ -33,6 +33,7 @@ export default function AppLayout({
   const currentTopic = pathSegments[1];
 
   // Generate breadcrumbs if not provided
+  const navigationManager = getNavigationManager();
   const displayBreadcrumbs = breadcrumbs || (
     isTopic ? navigationManager.generateBreadcrumbs(currentTopic) : []
   );

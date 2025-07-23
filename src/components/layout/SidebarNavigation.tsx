@@ -4,7 +4,8 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { NavigationItem, Category } from '../../types/content';
-import { navigationManager, progressTracker } from '../../lib/navigation';
+import { progressTracker } from '../../lib/navigation';
+import { getNavigationManager } from '../../lib/navigation-sync';
 import { withBasePath } from '../../lib/utils/path';
 
 interface SidebarNavigationProps {
@@ -20,6 +21,7 @@ export default function SidebarNavigation({
     new Set(currentCategory ? [currentCategory] : [])
   );
   const pathname = usePathname();
+  const navigationManager = getNavigationManager();
   const navigationTree = navigationManager.getNavigationTree();
 
   const toggleCategory = (categoryId: string) => {
@@ -193,6 +195,7 @@ interface QuickLinksProps {
 
 export function QuickLinks({ className = '' }: QuickLinksProps) {
   const bookmarkedTopics = progressTracker.getBookmarkedTopics();
+  const navigationManager = getNavigationManager();
   const recommendedTopics = navigationManager.getAllTopics().slice(0, 3);
 
   return (

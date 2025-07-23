@@ -4,7 +4,8 @@ import React from 'react';
 import Link from 'next/link';
 import { NavigationItem } from '../../types/content';
 import { withBasePath } from '../../lib/utils/path';
-import { navigationManager, progressTracker } from '../../lib/navigation';
+import { progressTracker } from '../../lib/navigation';
+import { getNavigationManager } from '../../lib/navigation-sync';
 
 interface TopicNavigationProps {
   currentTopicSlug: string;
@@ -17,6 +18,7 @@ export default function TopicNavigation({
   categorySlug, 
   className = '' 
 }: TopicNavigationProps) {
+  const navigationManager = getNavigationManager();
   const { previous, next } = navigationManager.getAdjacentTopics(currentTopicSlug);
 
   return (

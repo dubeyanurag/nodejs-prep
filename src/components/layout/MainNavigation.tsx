@@ -4,8 +4,8 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { NavigationItem } from '../../types/content';
-import { navigationManager } from '../../lib/navigation';
 import { useSearchSuggestions } from '../../lib/hooks/useSearch';
+import { getNavigationManager } from '../../lib/navigation-sync';
 import { withBasePath } from '../../lib/utils/path';
 
 interface MainNavigationProps {
@@ -15,6 +15,7 @@ interface MainNavigationProps {
 export default function MainNavigation({ className = '' }: MainNavigationProps) {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const navigationManager = getNavigationManager();
   const navigationTree = navigationManager.getNavigationTree();
 
   const isActiveRoute = (slug: string) => {
