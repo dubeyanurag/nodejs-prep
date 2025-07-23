@@ -35,19 +35,38 @@ jobs:
         run: npm ci
         
       - name: Run tests
-        run: npm test -- --passWithNoTests --verbose
+        run: npm test -- --passWithNoTests
         continue-on-error: true
         
       - name: Build application
         run: npm run build
         env:
           NODE_ENV: production
+          CI: true
+          
+      - name: Verify build output
+        run: |
+          if [ ! -d "out" ]; then
+            echo "❌ Build output directory 'out' not found"
+            exit 1
+          fi
+          if [ ! -f "out/index.html" ]; then
+            echo "❌ index.html not found in build output"
+            exit 1
+          fi
+          echo "✅ Build output verified"
+          ls -la out/
           
       - name: Add .nojekyll file
         run: touch out/.nojekyll
         
       - name: Generate sitemap
-        run: node scripts/generate-sitemap.js
+        run: |
+          if [ -f "scripts/generate-sitemap.js" ]; then
+            node scripts/generate-sitemap.js
+          else
+            echo "⚠️ Sitemap script not found, skipping"
+          fi
         env:
           SITE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
         
@@ -63,7 +82,6 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
