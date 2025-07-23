@@ -77,11 +77,12 @@ export default function MarkdownTopicPage({
       <main className="max-w-none">
         <ReactMarkdown
           components={{
-            code({ node, inline, className, children, ...props }) {
+            code({ node, className, children, ...props }: any) {
               const match = /language-(\w+)/.exec(className || '');
+              const inline = props.inline;
               return !inline && match ? (
                 <SyntaxHighlighter
-                  style={tomorrow}
+                  style={tomorrow as any}
                   language={match[1]}
                   PreTag="div"
                   className="rounded-lg"

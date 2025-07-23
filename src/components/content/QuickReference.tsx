@@ -300,7 +300,7 @@ function TableContent({ table }: { table: NonNullable<any['table']> }) {
     // Filter rows if searchable
     if (table.searchable && searchTerm) {
       rows = rows.filter(row => 
-        row.some(cell => 
+        row.some((cell: any) => 
           cell.toLowerCase().includes(searchTerm.toLowerCase())
         )
       );
@@ -337,7 +337,7 @@ function TableContent({ table }: { table: NonNullable<any['table']> }) {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              {table.headers.map((header, index) => (
+              {table.headers.map((header: any, index: number) => (
                 <th
                   key={index}
                   className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${
@@ -360,7 +360,7 @@ function TableContent({ table }: { table: NonNullable<any['table']> }) {
           <tbody className="bg-white divide-y divide-gray-200">
             {filteredAndSortedRows.map((row, rowIndex) => (
               <tr key={rowIndex} className="hover:bg-gray-50">
-                {row.map((cell, cellIndex) => (
+                {row.map((cell: any, cellIndex: number) => (
                   <td key={cellIndex} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {cell}
                   </td>
@@ -379,7 +379,7 @@ function ListContent({ list }: { list: NonNullable<any['list']> }) {
   
   return (
     <ListTag className={`space-y-3 ${list.ordered ? 'list-decimal list-inside' : 'list-disc list-inside'}`}>
-      {list.items.map((item, index) => (
+      {list.items.map((item: any, index: number) => (
         <li key={index} className="text-gray-900">
           <div className="inline-block w-full ml-2">
             <div className="font-medium">{item.title}</div>
@@ -396,7 +396,7 @@ function ListContent({ list }: { list: NonNullable<any['list']> }) {
             )}
             {item.notes && item.notes.length > 0 && (
               <ul className="mt-2 text-sm text-gray-600 list-disc list-inside ml-4">
-                {item.notes.map((note, noteIndex) => (
+                {item.notes.map((note: any, noteIndex: number) => (
                   <li key={noteIndex}>{note}</li>
                 ))}
               </ul>
@@ -448,7 +448,7 @@ function ComparisonContent({ comparison }: { comparison: NonNullable<any['compar
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Technology
             </th>
-            {comparison.criteria.map(criterion => (
+            {comparison.criteria.map((criterion: any) => (
               <th key={criterion} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 {criterion}
               </th>
@@ -459,12 +459,12 @@ function ComparisonContent({ comparison }: { comparison: NonNullable<any['compar
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {comparison.items.map((item, index) => (
+          {comparison.items.map((item: any, index: number) => (
             <tr key={index} className="hover:bg-gray-50">
               <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
                 {item.name}
               </td>
-              {comparison.criteria.map(criterion => (
+              {comparison.criteria.map((criterion: any) => (
                 <td key={criterion} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {item.values[criterion]}
                 </td>

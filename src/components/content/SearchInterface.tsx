@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { ContentSearch, SearchResult, SearchFilters, SearchSuggestion } from '../../lib/search';
-import { SearchableContent } from '../../lib/search';
+import { ContentSearch, SearchResult, SearchSuggestion, SearchableContent } from '../../lib/search';
+import type { SearchFilters } from '../../lib/search';
 
 interface SearchInterfaceProps {
   searchEngine: ContentSearch;
@@ -30,7 +30,7 @@ export default function SearchInterface({
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
-  const debounceRef = useRef<NodeJS.Timeout>();
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   // Debounced search function
   const performSearch = useCallback((searchQuery: string, searchFilters: SearchFilters) => {
@@ -325,7 +325,7 @@ function SearchFilters({ searchEngine, filters, onFiltersChange, className = "" 
   const categories = searchEngine.getCategories();
   const tags = searchEngine.getTags();
   const difficulties = ['beginner', 'intermediate', 'advanced', 'expert'];
-  const types = ['topic', 'question', 'example', 'flashcard'];
+  const types: SearchableContent['type'][] = ['topic', 'question', 'example', 'flashcard'];
 
   const handleFilterToggle = (filterType: keyof SearchFilters, value: string) => {
     const currentValues = filters[filterType] || [];

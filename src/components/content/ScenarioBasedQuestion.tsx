@@ -261,7 +261,6 @@ export default function ScenarioBasedQuestion({ question, index, className = '' 
                 {question.followUpQuestions && question.followUpQuestions.length > 0 && (
                   <FollowUpQuestions 
                     questions={question.followUpQuestions}
-                    parentQuestionId={question.id}
                   />
                 )}
               </div>

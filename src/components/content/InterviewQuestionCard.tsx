@@ -141,7 +141,6 @@ export default function InterviewQuestionCard({
               <div className="mt-6">
                 <FollowUpQuestions 
                   questions={question.followUpQuestions}
-                  parentQuestionId={question.id}
                 />
               </div>
             )}

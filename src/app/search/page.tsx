@@ -4,7 +4,8 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import SearchInterface from '../../components/content/SearchInterface';
 import SearchResults from '../../components/content/SearchResults';
-import { ContentSearch, SearchResult, SearchFilters, SearchIndexBuilder } from '../../lib/search';
+import { ContentSearch, SearchResult, SearchIndexBuilder } from '../../lib/search';
+import type { SearchFilters, SearchableContent } from '../../lib/search';
 import { contentLoader } from '../../lib/content-loader';
 
 // Mock data for demonstration - in a real app, this would come from your content management system
@@ -247,7 +248,7 @@ function SearchFilters({ searchEngine, filters, onFiltersChange }: SearchFilters
   const categories = searchEngine.getCategories();
   const tags = searchEngine.getTags();
   const difficulties = ['beginner', 'intermediate', 'advanced', 'expert'];
-  const types = ['topic', 'question', 'example', 'flashcard'];
+  const types: SearchableContent['type'][] = ['topic', 'question', 'example', 'flashcard'];
 
   const handleFilterToggle = (filterType: keyof SearchFilters, value: string) => {
     const currentValues = filters[filterType] || [];

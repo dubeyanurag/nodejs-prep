@@ -22,7 +22,7 @@ export interface SearchFilters {
 export interface SearchResult {
   item: SearchableContent;
   score?: number;
-  matches?: Fuse.FuseResultMatch[];
+  matches?: readonly any[];
 }
 
 export interface SearchSuggestion {

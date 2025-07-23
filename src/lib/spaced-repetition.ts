@@ -157,7 +157,7 @@ export class SpacedRepetitionEngine {
     if (result === 'again') return 'learning';
     
     // Graduate to review after multiple correct answers
-    const totalCorrect = progress.correctCount + (result !== 'again' ? 1 : 0);
+    const totalCorrect = progress.correctCount + ((result as ReviewResult) !== 'again' ? 1 : 0);
     if (totalCorrect >= 2 && result === 'good') return 'review';
     if (result === 'easy') return 'review';
     

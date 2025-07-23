@@ -169,7 +169,7 @@ function SearchResultCard({ result, onClick, rank }: SearchResultCardProps) {
           <span className="text-xl mr-3 flex-shrink-0">{getTypeIcon(item.type)}</span>
           <div className="min-w-0 flex-1">
             <h3 className="text-lg font-semibold text-gray-900 hover:text-blue-600 truncate">
-              <span dangerouslySetInnerHTML={{ __html: highlightMatches(item.title, matches) }} />
+              <span dangerouslySetInnerHTML={{ __html: highlightMatches(item.title, matches as any) }} />
             </h3>
             <div className="flex items-center mt-1 space-x-3 flex-wrap">
               <span className={`text-xs px-2 py-1 rounded-full font-medium ${getTypeColor(item.type)}`}>
@@ -200,7 +200,7 @@ function SearchResultCard({ result, onClick, rank }: SearchResultCardProps) {
 
       {item.excerpt && (
         <p className="text-gray-600 mb-4 line-clamp-3">
-          <span dangerouslySetInnerHTML={{ __html: highlightMatches(item.excerpt, matches) }} />
+          <span dangerouslySetInnerHTML={{ __html: highlightMatches(item.excerpt, matches as any) }} />
         </p>
       )}
 

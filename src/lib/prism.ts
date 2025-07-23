@@ -62,14 +62,14 @@ export function highlightCode(code: string, language: string): string {
   
   if (!isLanguageSupported(normalizedLang)) {
     console.warn(`Language '${language}' is not supported by Prism.js`);
-    return Prism.util.encode(code);
+    return Prism.util.encode(code) as string;
   }
 
   try {
     return Prism.highlight(code, Prism.languages[normalizedLang], normalizedLang);
   } catch (error) {
     console.error(`Error highlighting code for language '${language}':`, error);
-    return Prism.util.encode(code);
+    return Prism.util.encode(code) as string;
   }
 }
 

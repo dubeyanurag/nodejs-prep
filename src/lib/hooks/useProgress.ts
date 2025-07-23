@@ -97,8 +97,8 @@ export function useProgress(): ProgressState & ProgressActions {
       bookmarkedQuestions: Array.from(state.bookmarkedQuestions),
       bookmarkedTopics: Array.from(state.bookmarkedTopics),
       flashcardProgress: Array.from(state.flashcardProgress.entries()).map(([cardId, progress]) => ({
-        cardId,
         ...progress,
+        cardId,
         lastReviewed: progress.lastReviewed.toISOString(),
         nextReviewDate: progress.nextReviewDate?.toISOString()
       })),

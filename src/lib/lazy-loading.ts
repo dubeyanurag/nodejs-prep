@@ -9,13 +9,13 @@ export function createLazyComponent<T extends ComponentType<any>>(
 ): LazyExoticComponent<T> {
   return lazy(async () => {
     try {
-      const module = await importFn();
-      return module;
+      const loadedModule = await importFn();
+      return loadedModule;
     } catch (error) {
       console.error('Failed to load component:', error);
       // Return a fallback component in case of error
       return {
-        default: (fallback || (() => <div>Failed to load component</div>)) as T
+        default: (fallback || (() => React.createElement('div', null, 'Failed to load component'))) as T
       };
     }
   });
@@ -60,16 +60,16 @@ export function useLazyImage(src: string, placeholder?: string) {
 
   React.useEffect(() => {
     const img = new Image();
-    
+
     img.onload = () => {
       setImageSrc(src);
       setIsLoaded(true);
     };
-    
+
     img.onerror = () => {
       setIsError(true);
     };
-    
+
     img.src = src;
   }, [src]);
 
@@ -87,12 +87,12 @@ export async function dynamicImport<T>(
       return await importFn();
     } catch (error) {
       if (i === retries - 1) throw error;
-      
+
       console.warn(`Import failed, retrying... (${i + 1}/${retries})`);
       await new Promise(resolve => setTimeout(resolve, delay * (i + 1)));
     }
   }
-  
+
   throw new Error('All import attempts failed');
 }
 
@@ -105,7 +105,7 @@ export function preloadResource(href: string, as: string, type?: string) {
   link.href = href;
   link.as = as;
   if (type) link.type = type;
-  
+
   document.head.appendChild(link);
 }
 
@@ -116,7 +116,7 @@ export function prefetchResource(href: string) {
   const link = document.createElement('link');
   link.rel = 'prefetch';
   link.href = href;
-  
+
   document.head.appendChild(link);
 }
 
@@ -125,27 +125,27 @@ export const LazyComponents = {
   // Heavy components that should be loaded on demand
   Mermaid: createLazyComponent(
     () => import('../components/content/DiagramRenderer'),
-    () => <div className="animate-pulse bg-gray-200 h-64 rounded">Loading diagram...</div>
+    () => React.createElement('div', { className: 'animate-pulse bg-gray-200 h-64 rounded' }, 'Loading diagram...')
   ),
-  
+
   CodePlayground: createLazyComponent(
     () => import('../components/content/CodePlayground'),
-    () => <div className="animate-pulse bg-gray-200 h-48 rounded">Loading code playground...</div>
+    () => React.createElement('div', { className: 'animate-pulse bg-gray-200 h-48 rounded' }, 'Loading code playground...')
   ),
-  
+
   FlashcardSession: createLazyComponent(
     () => import('../components/content/FlashcardSession'),
-    () => <div className="animate-pulse bg-gray-200 h-96 rounded">Loading flashcards...</div>
+    () => React.createElement('div', { className: 'animate-pulse bg-gray-200 h-96 rounded' }, 'Loading flashcards...')
   ),
-  
+
   SearchInterface: createLazyComponent(
     () => import('../components/content/SearchInterface'),
-    () => <div className="animate-pulse bg-gray-200 h-32 rounded">Loading search...</div>
+    () => React.createElement('div', { className: 'animate-pulse bg-gray-200 h-32 rounded' }, 'Loading search...')
   ),
-  
+
   PerformanceBenchmarks: createLazyComponent(
     () => import('../components/content/PerformanceBenchmarks'),
-    () => <div className="animate-pulse bg-gray-200 h-64 rounded">Loading benchmarks...</div>
+    () => React.createElement('div', { className: 'animate-pulse bg-gray-200 h-64 rounded' }, 'Loading benchmarks...')
   ),
 };
 

@@ -4,7 +4,7 @@ import mermaid from 'mermaid';
 // Mermaid configuration
 const mermaidConfig = {
   startOnLoad: false,
-  theme: 'default',
+  theme: 'default' as const,
   themeVariables: {
     primaryColor: '#3B82F6',
     primaryTextColor: '#1F2937',
@@ -20,7 +20,7 @@ const mermaidConfig = {
   flowchart: {
     useMaxWidth: true,
     htmlLabels: true,
-    curve: 'basis',
+    curve: 'basis' as const,
   },
   sequence: {
     useMaxWidth: true,
@@ -45,7 +45,7 @@ const mermaidConfig = {
   er: {
     useMaxWidth: true,
     diagramPadding: 20,
-    layoutDirection: 'TB',
+    layoutDirection: 'TB' as const,
     minEntityWidth: 100,
     minEntityHeight: 75,
     entityPadding: 15,

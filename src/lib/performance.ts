@@ -36,7 +36,7 @@ export function initPerformanceMonitoring() {
       const fidObserver = new PerformanceObserver((list) => {
         const entries = list.getEntries();
         entries.forEach((entry) => {
-          console.log('FID:', entry.processingStart - entry.startTime);
+          console.log('FID:', (entry as any).processingStart - entry.startTime);
           // Send to analytics if needed
         });
       });
@@ -83,7 +83,7 @@ export function trackResourceLoading() {
         domParse: navigation.domContentLoadedEventStart - navigation.responseEnd,
         domReady: navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart,
         loadComplete: navigation.loadEventEnd - navigation.loadEventStart,
-        total: navigation.loadEventEnd - navigation.navigationStart,
+        total: navigation.loadEventEnd - (navigation as any).navigationStart,
       };
 
       console.log('Navigation Timing:', metrics);
