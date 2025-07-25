@@ -23,12 +23,21 @@ The Event Loop is a programming construct that waits for and dispatches events o
 
 The Event Loop has six main phases:
 
-1. **Timer Phase** - Executes callbacks scheduled by `setTimeout()` and `setInterval()`
-2. **Pending Callbacks Phase** - Executes I/O callbacks deferred to the next loop iteration
-3. **Idle, Prepare Phase** - Only used internally
-4. **Poll Phase** - Fetches new I/O events and executes I/O related callbacks
-5. **Check Phase** - Executes `setImmediate()` callbacks
-6. **Close Callbacks Phase** - Executes close callbacks (e.g., `socket.on('close', ...)`)
+1.  **Timer Phase** - Executes callbacks scheduled by `setTimeout()` and `setInterval()`
+2.  **Pending Callbacks Phase** - Executes I/O callbacks deferred to the next loop iteration
+3.  **Idle, Prepare Phase** - Only used internally
+4.  **Poll Phase** - Fetches new I/O events and executes I/O related callbacks
+5.  **Check Phase** - Executes `setImmediate()` callbacks
+6.  **Close Callbacks Phase** - Executes close callbacks (e.g., `socket.on('close', ...)`)
+
+### Microtasks and Macrotasks
+
+Understanding the difference between microtasks and macrotasks is crucial for predicting execution order in Node.js.
+
+*   **Macrotasks**: These are tasks handled by the Event Loop phases. Examples include `setTimeout`, `setInterval`, `setImmediate`, I/O operations, and UI rendering.
+*   **Microtasks**: These are smaller, more urgent tasks that are executed after the current operation completes and before the next macrotask begins. Examples include `process.nextTick`, Promises (`.then()`, `.catch()`, `.finally()`), and `queueMicrotask`.
+
+The microtask queue is processed entirely after each phase of the event loop (or after a synchronous block of code), before moving to the next macrotask. `process.nextTick` microtasks have higher priority than Promise microtasks.
 
 ## Code Examples
 
@@ -506,16 +515,17 @@ async function handleRequest(req, res) {
 
 ## Key Takeaways
 
-1. **Single-Threaded**: JavaScript execution is single-threaded, but I/O operations are handled by the system
-2. **Non-Blocking**: The Event Loop enables non-blocking I/O operations
-3. **Phase-Based**: The Event Loop operates in phases, each with specific responsibilities
-4. **Priority Order**: `process.nextTick()` and Promise callbacks have higher priority than timers
-5. **Performance**: Understanding the Event Loop is crucial for writing performant Node.js applications
-6. **Memory Management**: Proper cleanup of listeners and timers prevents memory leaks
-7. **Monitoring**: Use profiling tools to identify Event Loop blocking operations
+1.  **Single-Threaded**: JavaScript execution is single-threaded, but I/O operations are handled by the system.
+2.  **Non-Blocking**: The Event Loop enables non-blocking I/O operations.
+3.  **Phase-Based**: The Event Loop operates in phases, each with specific responsibilities.
+4.  **Microtasks vs. Macrotasks**: Microtasks (like `process.nextTick` and Promises) have higher priority and execute before the next macrotask.
+5.  **Performance**: Understanding the Event Loop is crucial for writing performant Node.js applications.
+6.  **Memory Management**: Proper cleanup of listeners and timers prevents memory leaks.
+7.  **Monitoring**: Use profiling tools to identify Event Loop blocking operations.
 
 ## Next Steps
 
-- Learn about [Promises and Async/Await](./promises-async-await.md)
-- Explore [Stream Processing](./streams.md)
-- Study [Worker Threads](./worker-threads.md) for CPU-intensive tasks
+-   Learn about [Async/Await](./promises-async-await.md)
+-   Explore [Stream Processing](./streams.md)
+-   Study [Worker Threads](./worker-threads.md) for CPU-intensive tasks
+-   Delve deeper into [JavaScript Promises](../javascript/promises.md)

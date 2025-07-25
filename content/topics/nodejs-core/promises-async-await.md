@@ -1,59 +1,24 @@
 ---
-title: "Promises and Async/Await"
+title: "Async/Await in Node.js"
 category: "nodejs-core"
 difficulty: "intermediate"
 estimatedReadTime: 20
-tags: ["promises", "async-await", "error-handling", "concurrency"]
-lastUpdated: "2024-01-15"
+tags: ["async-await", "error-handling", "concurrency", "promises"]
+lastUpdated: "2024-07-26"
 ---
 
-# Promises and Async/Await
+# Async/Await in Node.js
 
 ## Introduction
 
-Promises and async/await are fundamental concepts for handling asynchronous operations in Node.js. They provide a cleaner alternative to callback-based programming and are essential for modern JavaScript development.
+Async/await provides a powerful and readable way to work with asynchronous operations in Node.js, building on top of Promises. It allows you to write asynchronous code that looks and behaves more like synchronous code, making it easier to understand and debug. For a deep dive into Promises, refer to our [JavaScript Promises guide](../javascript/promises.md).
 
-## Core Concepts
-
-### What are Promises?
-
-A Promise is an object representing the eventual completion or failure of an asynchronous operation. It has three states:
-
-- **Pending**: Initial state, neither fulfilled nor rejected
-- **Fulfilled**: Operation completed successfully
-- **Rejected**: Operation failed
-
-### Promise Creation and Usage
-
-```javascript
-// Creating a Promise
-const fetchUserData = (userId) => {
-  return new Promise((resolve, reject) => {
-    // Simulate API call
-    setTimeout(() => {
-      if (userId > 0) {
-        resolve({ id: userId, name: 'John Doe', email: 'john@example.com' });
-      } else {
-        reject(new Error('Invalid user ID'));
-      }
-    }, 1000);
-  });
-};
-
-// Using the Promise
-fetchUserData(1)
-  .then(user => console.log('User:', user))
-  .catch(error => console.error('Error:', error.message));
-```
-
-## Async/Await Syntax
-
-### Basic Usage
+## Basic Usage
 
 ```javascript
 async function getUserData(userId) {
   try {
-    const user = await fetchUserData(userId);
+    const user = await fetchUserData(userId); // Assume fetchUserData returns a Promise
     console.log('User:', user);
     return user;
   } catch (error) {
@@ -73,8 +38,8 @@ getUserData(1);
 async function handleUserRequest(userId) {
   try {
     const user = await fetchUserData(userId);
-    const profile = await fetchUserProfile(user.id);
-    const preferences = await fetchUserPreferences(user.id);
+    const profile = await fetchUserProfile(user.id); // Assume fetchUserProfile returns a Promise
+    const preferences = await fetchUserPreferences(user.id); // Assume fetchUserPreferences returns a Promise
     
     return { user, profile, preferences };
   } catch (error) {
@@ -92,7 +57,7 @@ async function handleUserRequestAlt(userId) {
   
   if (!user) return null;
   
-  const profile = await fetchUserProfile(user.id).catch(() => ({}));
+  const profile = await fetchUserProfile(user.id).catch(() => ({})); // Handle potential errors for profile
   return { user, profile };
 }
 ```
@@ -134,56 +99,12 @@ async function fetchUserDataConcurrentSafe(userIds) {
 }
 ```
 
-### Promise Utility Methods
-
-```javascript
-// Promise.all - All must succeed
-async function fetchAllUserData(userIds) {
-  try {
-    const users = await Promise.all(
-      userIds.map(id => fetchUserData(id))
-    );
-    return users;
-  } catch (error) {
-    console.error('One or more requests failed:', error);
-    throw error;
-  }
-}
-
-// Promise.allSettled - Get all results regardless of success/failure
-async function fetchAllUserDataSettled(userIds) {
-  const results = await Promise.allSettled(
-    userIds.map(id => fetchUserData(id))
-  );
-  
-  const successful = results
-    .filter(result => result.status === 'fulfilled')
-    .map(result => result.value);
-    
-  const failed = results
-    .filter(result => result.status === 'rejected')
-    .map(result => result.reason);
-    
-  return { successful, failed };
-}
-
-// Promise.race - First to complete wins
-async function fetchUserDataWithTimeout(userId, timeoutMs = 5000) {
-  const userPromise = fetchUserData(userId);
-  const timeoutPromise = new Promise((_, reject) => {
-    setTimeout(() => reject(new Error('Request timeout')), timeoutMs);
-  });
-  
-  return Promise.race([userPromise, timeoutPromise]);
-}
-```
-
-## Real-World Examples
+### Real-World Examples
 
 ### Database Operations
 
 ```javascript
-const mysql = require('mysql2/promise');
+const mysql = require('mysql2/promise'); // Using mysql2/promise for async/await support
 
 class UserService {
   constructor(dbConfig) {
@@ -247,16 +168,10 @@ class PaymentService {
 
   async processPayment(paymentData) {
     try {
-      // Validate payment data
+      // Assume validatePayment, createPaymentIntent, executePayment, sendPaymentConfirmation return Promises
       await this.validatePayment(paymentData);
-      
-      // Create payment intent
       const intent = await this.createPaymentIntent(paymentData);
-      
-      // Process payment
       const result = await this.executePayment(intent.id, paymentData);
-      
-      // Send confirmation
       await this.sendPaymentConfirmation(result);
       
       return result;
@@ -350,8 +265,9 @@ class BatchProcessor {
   }
 
   async processBatchItems(items) {
-    // Process all items concurrently
-    return Promise.all(items.map(item => this.processItem(item)));
+    // Simulate processing
+    await new Promise(resolve => setTimeout(resolve, Math.random() * 100));
+    return `Processed: ${item}`;
   }
 
   async processItem(item) {
@@ -406,14 +322,14 @@ async function fastFetch() {
 
 ## Key Takeaways
 
-1. **Promises** provide a cleaner alternative to callbacks for asynchronous operations
-2. **Async/await** makes asynchronous code look and behave more like synchronous code
-3. **Error handling** is crucial - always use try-catch with async/await
-4. **Concurrency** can significantly improve performance when operations are independent
-5. **Promise utilities** like `Promise.all()` and `Promise.allSettled()` are powerful tools
+1.  **Async/await** makes asynchronous code look and behave more like synchronous code.
+2.  **Error handling** is crucial – always use `try-catch` with `async/await`.
+3.  **Concurrency** can significantly improve performance when operations are independent.
+4.  `async/await` is built on Promises; understanding Promises is key to mastering `async/await`.
 
 ## Next Steps
 
-- Learn about [Error Handling Strategies](./error-handling.md)
-- Explore [Stream Processing](./streams.md)
-- Study [Testing Async Code](./testing-async.md)
+-   Learn about [Error Handling Strategies](./error-handling.md)
+-   Explore [Stream Processing](./streams.md)
+-   Study [Testing Async Code](./testing-async.md)
+-   Delve deeper into [JavaScript Promises](../javascript/promises.md)
