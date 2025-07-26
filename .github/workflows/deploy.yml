@@ -69,7 +69,7 @@ jobs:
             echo "⚠️ Sitemap script not found, skipping"
           fi
         env:
-          SITE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+          SITE_URL: https://dubeyanurag.github.io/nodejs-prep
         
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

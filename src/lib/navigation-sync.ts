@@ -3,14 +3,28 @@
  */
 
 import { navigationManager, CurriculumBuilder } from './navigation';
-import { contentLoaderServer } from './content-loader-server';
 import { Curriculum, Category, Topic } from '../types/content';
+
+// Only import server-side content loader on server
+let contentLoaderServer: any = null;
+if (typeof window === 'undefined') {
+  try {
+    contentLoaderServer = require('./content-loader-server').contentLoaderServer;
+  } catch (error) {
+    console.warn('Failed to load server-side content loader:', error);
+  }
+}
 
 /**
  * Initialize navigation manager with content from content loader
  */
 export function initializeNavigation(): void {
   try {
+    // Only use server-side content loader if available (server-side)
+    if (!contentLoaderServer) {
+      throw new Error('Server-side content loader not available');
+    }
+    
     const categories = contentLoaderServer.getCategories();
     const allTopics = contentLoaderServer.getAllTopics();
     
@@ -18,7 +32,7 @@ export function initializeNavigation(): void {
     const builder = new CurriculumBuilder();
     
     // Add categories
-    categories.forEach(categoryInfo => {
+    categories.forEach((categoryInfo: any) => {
       builder.addCategory({
         id: categoryInfo.slug,
         name: categoryInfo.title,
@@ -29,23 +43,32 @@ export function initializeNavigation(): void {
     });
     
     // Add topics to categories
-    allTopics.forEach(topicInfo => {
+    allTopics.forEach((topicInfo: any) => {
       // Create a basic topic structure
       const topic: Topic = {
         id: `${topicInfo.category}-${topicInfo.slug}`,
         title: topicInfo.title,
         slug: topicInfo.slug,
+        category: topicInfo.category,
         difficulty: topicInfo.difficulty as any,
         content: {
+          id: `${topicInfo.category}-${topicInfo.slug}`,
+          title: topicInfo.title,
+          category: topicInfo.category,
+          difficulty: topicInfo.difficulty as any,
           sections: [], // Could be enhanced to parse actual content sections
           examples: [],
-          questions: []
+          questions: [],
+          diagrams: [],
+          flashcards: []
         },
         metadata: {
+          lastUpdated: new Date(topicInfo.lastUpdated),
           estimatedReadTime: topicInfo.estimatedReadTime,
-          lastUpdated: topicInfo.lastUpdated,
-          tags: topicInfo.tags,
-          prerequisites: []
+          questionCount: 0,
+          exampleCount: 0,
+          diagramCount: 0,
+          tags: topicInfo.tags
         }
       };
       
