@@ -503,3 +503,242 @@ WHERE u.active = true;
 - Learn about [Database Indexing Strategies](./indexing-strategies.md)
 - Explore [NoSQL Databases](./nosql-fundamentals.md)
 - Study [Database Performance Tuning](./performance-tuning.md)
+
+## Interview Questions & Answers
+
+### Question 1: Explain the different types of SQL JOINs and when to use each.
+**Difficulty**: Intermediate
+**Category**: SQL Queries
+
+**Answer**: SQL JOINs combine rows from two or more tables based on a related column between them.
+
+1.  **`INNER JOIN`**: Returns rows when there is a match in *both* tables.
+    ```sql
+    SELECT Orders.OrderID, Customers.CustomerName
+    FROM Orders
+    INNER JOIN Customers ON Orders.CustomerID = Customers.CustomerID;
+    ```
+2.  **`LEFT JOIN` (or `LEFT OUTER JOIN`)**: Returns all rows from the left table, and the matching rows from the right table. If no match, NULLs are returned for the right table's columns.
+    ```sql
+    SELECT Customers.CustomerName, Orders.OrderID
+    FROM Customers
+    LEFT JOIN Orders ON Customers.CustomerID = Orders.CustomerID;
+    ```
+3.  **`RIGHT JOIN` (or `RIGHT OUTER JOIN`)**: Returns all rows from the right table, and the matching rows from the left table. If no match, NULLs are returned for the left table's columns.
+    ```sql
+    SELECT Orders.OrderID, Employees.LastName
+    FROM Orders
+    RIGHT JOIN Employees ON Orders.EmployeeID = Employees.EmployeeID;
+    ```
+4.  **`FULL JOIN` (or `FULL OUTER JOIN`)**: Returns rows when there is a match in one of the tables. Returns all rows from both tables, with NULLs for non-matching sides.
+    ```sql
+    SELECT CustomerName, OrderID
+    FROM Customers
+    FULL OUTER JOIN Orders ON Customers.CustomerID = Orders.CustomerID
+    ORDER BY CustomerName;
+    ```
+5.  **`SELF JOIN`**: A table is joined to itself. Used to combine rows from the same table.
+    ```sql
+    SELECT A.EmployeeName AS Employee1, B.EmployeeName AS Employee2
+    FROM Employees A, Employees B
+    WHERE A.ManagerID = B.EmployeeID;
+    ```
+
+### Question 2: What is database normalization, and what are its benefits and drawbacks?
+**Difficulty**: Intermediate
+**Category**: Database Design
+
+**Answer**: Database normalization is the process of organizing the columns and tables of a relational database to minimize data redundancy and improve data integrity. It typically involves breaking down large tables into smaller, related tables and defining relationships between them.
+
+**Benefits**:
+*   **Reduced Data Redundancy**: Stores data in only one place, saving storage space.
+*   **Improved Data Integrity**: Ensures data consistency by eliminating duplicate data that could lead to inconsistencies.
+*   **Better Data Maintainability**: Updates, insertions, and deletions are more efficient and less prone to errors.
+*   **Simplified Queries**: Often leads to simpler and more focused queries, especially for transactional workloads.
+
+**Drawbacks**:
+*   **Increased Query Complexity**: Joins across multiple tables can make read queries more complex and potentially slower (e.g., for reporting or analytical queries).
+*   **Increased Joins Overhead**: More joins mean more overhead for the database system.
+*   **Performance Trade-offs**: While good for write performance, excessive normalization can sometimes negatively impact read performance.
+
+### Question 3: Explain the purpose of indexes in SQL and discuss different types.
+**Difficulty**: Intermediate
+**Category**: Performance Optimization
+
+**Answer**: Database indexes are special lookup tables that the database search engine can use to speed up data retrieval. They are similar to an index in a book, allowing the database to find data quickly without scanning every row.
+
+**Purpose**:
+*   **Faster Data Retrieval**: Significantly speeds up `SELECT` queries, especially with `WHERE` clauses, `JOIN` conditions, and `ORDER BY` clauses.
+*   **Unique Constraints**: Enforce uniqueness on columns (e.g., primary keys, unique keys).
+
+**Types**:
+1.  **Clustered Index**: Determines the physical order of data in a table. A table can have only one clustered index (e.g., usually the primary key). Data is stored in the order of the clustered index.
+2.  **Non-Clustered Index**: Does not determine the physical order of data. It stores a logical ordering of the data and pointers to the actual data rows. A table can have multiple non-clustered indexes.
+3.  **Unique Index**: Ensures that all values in the indexed column(s) are unique.
+4.  **Composite (Compound) Index**: An index on multiple columns. The order of columns in a composite index is crucial for query optimization.
+5.  **Partial (Filtered) Index**: Indexes only a subset of rows in a table that satisfy a specified condition. Useful for optimizing queries on frequently queried subsets of data and reducing index size.
+6.  **Full-Text Index**: Used for full-text searches on character-based data.
+7.  **Functional (Expression) Index**: An index created on the result of a function or expression, rather than just a column value.
+
+### Question 4: How can you optimize a slow SQL query? Walk through a general process.
+**Difficulty**: Senior
+**Category**: Performance Optimization
+
+**Answer**: Optimizing a slow SQL query is a systematic process:
+
+1.  **Identify the Slow Query**: Use database monitoring tools, slow query logs, or APM (Application Performance Monitoring) to find queries that are consistently slow or consume significant resources.
+2.  **Analyze the Execution Plan (`EXPLAIN`)**: Use `EXPLAIN` (or `EXPLAIN ANALYZE` in PostgreSQL) to understand how the database executes the query. Look for:
+    *   **Full Table Scans**: Indicates missing or unused indexes.
+    *   **Inefficient Joins**: Nested loops on large tables, or large intermediate result sets.
+    *   **Temporary Tables/Files**: Indicates sorting or grouping operations that exceed memory limits.
+    *   **High Cost Operations**: Identify the most expensive parts of the query.
+3.  **Indexing Strategy**:
+    *   Ensure indexes exist on columns used in `WHERE` clauses, `JOIN` conditions, `ORDER BY`, and `GROUP BY`.
+    *   Consider composite indexes with proper column order (equality first, then sort, then range).
+    *   Use covering indexes if possible (all queried columns are in the index).
+    *   Add partial/functional indexes for specific use cases.
+4.  **Query Rewriting**:
+    *   Avoid `SELECT *`; select only necessary columns.
+    *   Replace `IN` with `EXISTS` or `JOIN` for subqueries, especially with large result sets.
+    *   Optimize `OR` conditions (sometimes `UNION ALL` or multiple `WHERE` clauses can be better).
+    *   Break down complex queries into smaller, more manageable CTEs.
+    *   Avoid functions on indexed columns in `WHERE` clauses (e.g., `WHERE YEAR(date_column) = 2024` prevents index use).
+5.  **Database Configuration Tuning**: Adjust database parameters like `shared_buffers`, `work_mem`, `effective_cache_size` (for PostgreSQL) or `innodb_buffer_pool_size` (for MySQL).
+6.  **Data Partitioning/Sharding**: For extremely large tables, consider partitioning (splitting a table into smaller logical pieces) or sharding (distributing data across multiple physical databases).
+7.  **Application-Level Caching**: Implement application-level caching (e.g., Redis, Memcached) to reduce database hits for frequently accessed data.
+8.  **Regular Maintenance**: Ensure statistics are up-to-date (`ANALYZE` command), and rebuild/reindex tables/indexes regularly if they suffer from bloat.
+9.  **Hardware & Infrastructure**: Consider upgrading hardware (CPU, RAM, SSDs) or optimizing network latency if database performance is consistently bottlenecked by resources.
+
+### Question 5: What are SQL Window Functions, and provide an example of their use.
+**Difficulty**: Advanced
+**Category**: SQL Queries
+
+**Answer**: SQL Window Functions perform calculations across a set of table rows that are related to the current row. Unlike aggregate functions (like `SUM()`, `AVG()`) which group rows into a single output row, window functions return a value for *each row* in the result set. They operate on a "window" of rows defined by an `OVER()` clause.
+
+**Common Window Functions**:
+*   **Ranking Functions**: `ROW_NUMBER()`, `RANK()`, `DENSE_RANK()`, `NTILE()`
+*   **Analytic Functions**: `LAG()`, `LEAD()`, `FIRST_VALUE()`, `LAST_VALUE()`
+*   **Aggregate Functions used as Window Functions**: `SUM() OVER()`, `AVG() OVER()`, `COUNT() OVER()`
+
+**Example Use Case: Calculating Running Total and Daily Average Sales**
+Consider a table `sales` with `sale_date` and `amount`.
+
+```sql
+SELECT
+    sale_date,
+    amount,
+    -- Calculate a running total of sales for each day
+    SUM(amount) OVER (ORDER BY sale_date) AS running_total_sales,
+    -- Calculate the 7-day moving average of sales
+    AVG(amount) OVER (
+        ORDER BY sale_date
+        ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
+    ) AS seven_day_moving_average
+FROM sales
+ORDER BY sale_date;
+```
+In this example:
+*   `SUM(amount) OVER (ORDER BY sale_date)` calculates the cumulative sum of `amount` ordered by `sale_date`.
+*   `AVG(amount) OVER (ORDER BY sale_date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW)` calculates the average `amount` for the current row and the 6 preceding rows, effectively a 7-day moving average.
+
+### Question 6: Describe Common Table Expressions (CTEs) and when they are useful.
+**Difficulty**: Intermediate
+**Category**: SQL Queries
+
+**Answer**: A Common Table Expression (CTE) is a temporary, named result set that you can reference within a `SELECT`, `INSERT`, `UPDATE`, or `DELETE` statement. It's defined using the `WITH` clause and exists only for the duration of the query.
+
+**Syntax**:
+```sql
+WITH cte_name (column1, column2, ...) AS (
+    -- CTE query definition
+    SELECT column1, column2 FROM table_name WHERE condition
+)
+-- Main query that references the CTE
+SELECT * FROM cte_name WHERE another_condition;
+```
+
+**When they are useful**:
+1.  **Readability**: Break down complex, multi-step queries into logical, readable units.
+2.  **Recursion**: Enable recursive queries (recursive CTEs) for hierarchical or graph-like data (e.g., organizational charts, bill of materials).
+3.  **Modularity**: Reuse the same subquery multiple times within a single larger query, avoiding repetition.
+4.  **Simplifying Complex Joins/Subqueries**: Make deeply nested subqueries or complex joins easier to manage.
+5.  **Avoiding Repeated Calculations**: Define a complex calculation once in a CTE and reuse its result.
+
+**Example Use Case: Hierarchical Data (Organizational Chart)**
+```sql
+WITH RECURSIVE EmployeePaths (EmployeeID, EmployeeName, ManagerID, Level, Path) AS (
+    -- Base case: Employees who are managers (no manager_id)
+    SELECT EmployeeID, EmployeeName, ManagerID, 1, CAST(EmployeeName AS VARCHAR(MAX))
+    FROM Employees
+    WHERE ManagerID IS NULL
+
+    UNION ALL
+
+    -- Recursive case: Employees reporting to managers
+    SELECT e.EmployeeID, e.EmployeeName, e.ManagerID, ep.Level + 1,
+           ep.Path + ' -> ' + e.EmployeeName
+    FROM Employees e
+    INNER JOIN EmployeePaths ep ON e.ManagerID = ep.EmployeeID
+)
+SELECT EmployeeID, EmployeeName, ManagerID, Level, Path
+FROM EmployeePaths
+ORDER BY Level, EmployeeName;
+```
+
+### Question 7: What are the best practices for transaction management in SQL?
+**Difficulty**: Senior
+**Category**: Transaction Management
+
+**Answer**: Transaction management ensures data integrity and consistency in a multi-user environment.
+
+**Best Practices**:
+1.  **Use Transactions**: Always wrap a series of related database operations that must succeed or fail as a single unit within a transaction (`BEGIN/START TRANSACTION`, `COMMIT`, `ROLLBACK`).
+2.  **Keep Transactions Short**: Long-running transactions hold locks for extended periods, reducing concurrency and increasing the risk of deadlocks.
+3.  **Use Appropriate Isolation Levels**: Choose the lowest isolation level that meets your application's consistency requirements to maximize concurrency. `READ COMMITTED` is often a good default, `SERIALIZABLE` offers highest consistency but lowest concurrency.
+4.  **Error Handling**: Implement robust error handling with `TRY...CATCH` blocks (or equivalent) to ensure `ROLLBACK` happens on error.
+5.  **Consistent Lock Ordering**: When accessing multiple resources within a transaction, always acquire locks in a consistent order (e.g., always by primary key ascending) to minimize deadlocks.
+6.  **Avoid User Input During Transactions**: Don't wait for user input or external API calls inside an active transaction.
+7.  **Monitor for Deadlocks**: Implement monitoring and alerting for deadlocks. Implement retry logic with exponential backoff on the application side when deadlocks occur.
+8.  **`FOR UPDATE` / Pessimistic Locking**: Use explicit row-level locks (`SELECT ... FOR UPDATE` in PostgreSQL/MySQL) for critical sections where you need to prevent concurrent modifications.
+9.  **Optimistic Locking**: For less contentious scenarios, use optimistic locking (e.g., a version column) to detect conflicts at commit time, reducing lock contention.
+
+**Example (Node.js with `pg` and explicit transaction):**
+```javascript
+const { Pool } = require('pg');
+const pool = new Pool(/* ...db config... */);
+
+async function transferFunds(fromAccountId, toAccountId, amount) {
+  const client = await pool.connect(); // Acquire a client from the pool
+  try {
+    await client.query('BEGIN'); // Start transaction
+
+    // Check balance and lock rows (pessimistic locking)
+    const resFrom = await client.query(
+      'SELECT balance FROM accounts WHERE id = $1 FOR UPDATE',
+      [fromAccountId]
+    );
+
+    if (resFrom.rows[0].balance < amount) {
+      throw new Error('Insufficient funds');
+    }
+
+    // Perform debit and credit
+    await client.query(
+      'UPDATE accounts SET balance = balance - $1 WHERE id = $2',
+      [amount, fromAccountId]
+    );
+    await client.query(
+      'UPDATE accounts SET balance = balance + $1 WHERE id = $2',
+      [amount, toAccountId]
+    );
+
+    await client.query('COMMIT'); // Commit transaction
+    return { success: true, message: 'Funds transferred successfully' };
+  } catch (e) {
+    await client.query('ROLLBACK'); // Rollback on error
+    throw new Error(`Transaction failed: ${e.message}`);
+  } finally {
+    client.release(); // Release client back to the pool
+  }
+}
+```

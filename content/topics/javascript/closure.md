@@ -104,6 +104,109 @@ button.addEventListener('click', function() {
 });
 ```
 
+### Advanced Use Cases
+
+#### Currying
+
+Currying is a functional programming technique where a function that takes multiple arguments is transformed into a sequence of functions, each taking a single argument. Closures are essential for implementing currying.
+
+```javascript
+function multiply(a, b, c) {
+  return a * b * c;
+}
+
+// Curried version
+function curriedMultiply(a) {
+  return function(b) {
+    return function(c) {
+      return a * b * c;
+    };
+  };
+}
+
+const multiplyBy2 = curriedMultiply(2);
+const multiplyBy2and3 = multiplyBy2(3);
+console.log(multiplyBy2and3(4)); // Output: 24 (2 * 3 * 4)
+
+// Using arrow functions for conciseness
+const arrowCurriedMultiply = a => b => c => a * b * c;
+console.log(arrowCurriedMultiply(2)(3)(4)); // Output: 24
+```
+
+#### Memoization
+
+Memoization is an optimization technique used to speed up computer programs by caching the results of expensive function calls and returning the cached result when the same inputs occur again. Closures allow the cache to be private to the memoized function.
+
+```javascript
+function memoize(fn) {
+  const cache = {}; // The closure captures this cache
+
+  return function(...args) {
+    const key = JSON.stringify(args); // Create a unique key for arguments
+    if (cache[key]) {
+      console.log('Fetching from cache for:', key);
+      return cache[key];
+    } else {
+      console.log('Calculating result for:', key);
+      const result = fn.apply(this, args);
+      cache[key] = result;
+      return result;
+    }
+  };
+}
+
+// Example: Expensive Fibonacci calculation
+function fibonacci(n) {
+  if (n <= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+const memoizedFibonacci = memoize(fibonacci);
+
+console.log(memoizedFibonacci(10)); // Calculates
+console.log(memoizedFibonacci(10)); // Fetches from cache
+console.log(memoizedFibonacci(15)); // Calculates
+console.log(memoizedFibonacci(15)); // Fetches from cache
+```
+
+#### Module Pattern
+
+Before ES6 modules, the Module Pattern was a popular way to achieve encapsulation and create private/public members using closures.
+
+```javascript
+const ShoppingCart = (function() {
+  let items = []; // Private variable due to closure
+
+  function addItem(item) {
+    items.push(item);
+    console.log(`${item} added to cart.`);
+  }
+
+  function removeItem(item) {
+    items = items.filter(i => i !== item);
+    console.log(`${item} removed from cart.`);
+  }
+
+  function getCartContents() {
+    return [...items]; // Return a copy to prevent external modification
+  }
+
+  return {
+    add: addItem,
+    remove: removeItem,
+    getContents: getCartContents,
+    itemCount: () => items.length // Public method accessing private data
+  };
+})();
+
+ShoppingCart.add('Laptop');
+ShoppingCart.add('Mouse');
+console.log('Cart contents:', ShoppingCart.getContents()); // ['Laptop', 'Mouse']
+console.log('Item count:', ShoppingCart.itemCount()); // 2
+
+// console.log(ShoppingCart.items); // Undefined - 'items' is private
+```
+
 ## Common Pitfalls
 
 ### Closures in Loops
@@ -166,3 +269,46 @@ function createSafeCounter() {
 const safeCounter = createSafeCounter();
 safeCounter.increment();
 console.log(safeCounter.getValue()); // Output: 1
+```
+
+### Question 3: How do closures contribute to data privacy and encapsulation in JavaScript?
+**Difficulty**: Intermediate
+**Category**: Data Privacy
+
+**Answer**: Closures enable data privacy and encapsulation by allowing inner functions to access and manipulate variables declared in their outer (enclosing) function's scope, while keeping those variables inaccessible from outside the outer function. This creates a "private" scope for the variables, meaning they cannot be directly accessed or modified by external code. This mimics private members in object-oriented programming, ensuring that the internal state of a function or module can only be changed through its exposed public methods, enhancing data integrity and preventing unintended side effects.
+
+### Question 4: Explain the "closure in loops" common pitfall and how to avoid it.
+**Difficulty**: Intermediate
+**Category**: Common Pitfalls
+
+**Answer**: The "closure in loops" pitfall occurs when closures are created inside a loop using `var` for the loop variable. Because `var` is function-scoped (or global-scoped) and not block-scoped, all closures created in the loop end up referencing the *same* variable `i` in the outer scope. By the time the asynchronous operations (like `setTimeout`) execute, the loop has already finished, and `i` holds its final value (e.g., `4` in the example).
+
+To avoid this, you can:
+1.  **Use `let`**: `let` is block-scoped, so a new `i` is created for each iteration, and each closure captures its own distinct `i`. This is the most common and recommended solution in modern JavaScript.
+2.  **Use an Immediately Invoked Function Expression (IIFE)**: Wrap the `setTimeout` call in an IIFE, passing `i` as an argument. The IIFE creates a new function scope for each iteration, and the value of `i` is "captured" as a local variable within that scope.
+
+**Example**:
+```javascript
+// Incorrect usage with 'var'
+for (var i = 1; i <= 3; i++) {
+  setTimeout(function() {
+    console.log(i); // Outputs 4, 4, 4
+  }, i * 100);
+}
+
+// Correct usage with 'let' (preferred)
+for (let j = 1; j <= 3; j++) {
+  setTimeout(function() {
+    console.log(j); // Outputs 1, 2, 3
+  }, j * 100);
+}
+
+// Correct usage with an IIFE (older solution)
+for (var k = 1; k <= 3; k++) {
+  (function(num) {
+    setTimeout(function() {
+      console.log(num); // Outputs 1, 2, 3
+    }, num * 100);
+  })(k);
+}
+```

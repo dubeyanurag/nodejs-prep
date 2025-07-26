@@ -928,6 +928,249 @@ A:
 4. **Reusability** - Components can be reused in different contexts
 5. **Readability** - Code is more organized and understandable
 
+### Question 7: Provide a practical example of applying the Single Responsibility Principle (SRP) in a Node.js application.
+**Difficulty**: Intermediate
+**Category**: SRP
+
+**Answer**: SRP states that a module, class, or function should have only one reason to change. In Node.js, this means separating concerns like data handling, business logic, and API presentation.
+
+**Example: User Module with SRP**
+```javascript
+// user.repository.js (Single responsibility: Data access for users)
+class UserRepository {
+  constructor(dbClient) {
+    this.dbClient = dbClient;
+  }
+
+  async findById(id) { /* ... database query ... */ }
+  async create(user) { /* ... database insert ... */ }
+  async update(id, data) { /* ... database update ... */ }
+}
+
+// user.service.js (Single responsibility: Business logic for users)
+class UserService {
+  constructor(userRepository, emailService) {
+    this.userRepository = userRepository;
+    this.emailService = emailService;
+  }
+
+  async createUser(userData) {
+    // Business logic: validate, create in DB, send welcome email
+    const newUser = await this.userRepository.create(userData);
+    await this.emailService.sendWelcomeEmail(newUser.email);
+    return newUser;
+  }
+
+  async getUserProfile(id) { /* ... business logic for getting profile ... */ }
+}
+
+// user.controller.js (Single responsibility: Handle HTTP requests and responses)
+class UserController {
+  constructor(userService) {
+    this.userService = userService;
+  }
+
+  async postUser(req, res, next) {
+    try {
+      const user = await this.userService.createUser(req.body);
+      res.status(201).json(user);
+    } catch (error) {
+      next(error); // Pass to global error handler
+    }
+  }
+
+  async getUser(req, res, next) { /* ... */ }
+}
+```
+**Benefits**: Each component is easier to understand, test, and maintain. Changes to the database schema (UserRepository) don't affect business logic (UserService), and changes to business rules don't affect how requests are handled (UserController).
+
+### Question 8: How does the Open/Closed Principle (OCP) improve extensibility? Provide an example.
+**Difficulty**: Intermediate
+**Category**: OCP
+
+**Answer**: OCP states that software entities (classes, modules, functions) should be open for extension but closed for modification. This means you should be able to add new functionality without changing existing, tested code. It's achieved through abstraction and polymorphism.
+
+**Example: Notification Service with OCP**
+```typescript
+// notification-channel.interface.ts (Abstraction/Interface)
+interface INotificationChannel {
+  send(message: string, recipient: string): Promise<void>;
+}
+
+// email-channel.ts (Concrete Implementation 1)
+class EmailChannel implements INotificationChannel {
+  async send(message: string, recipient: string): Promise<void> {
+    console.log(`Sending email to ${recipient}: ${message}`);
+    // ... actual email sending logic
+  }
+}
+
+// sms-channel.ts (Concrete Implementation 2)
+class SmsChannel implements INotificationChannel {
+  async send(message: string, recipient: string): Promise<void> {
+    console.log(`Sending SMS to ${recipient}: ${message}`);
+    // ... actual SMS sending logic
+  }
+}
+
+// notification.service.ts (Open for extension, closed for modification)
+class NotificationService {
+  private channels: Map<string, INotificationChannel>;
+
+  constructor() {
+    this.channels = new Map();
+  }
+
+  registerChannel(name: string, channel: INotificationChannel) {
+    this.channels.set(name, channel);
+  }
+
+  async sendNotification(channelName: string, message: string, recipient: string): Promise<void> {
+    const channel = this.channels.get(channelName);
+    if (!channel) {
+      throw new Error(`Notification channel "${channelName}" not registered.`);
+    }
+    await channel.send(message, recipient);
+  }
+}
+
+// Usage
+const notificationService = new NotificationService();
+notificationService.registerChannel('email', new EmailChannel());
+notificationService.registerChannel('sms', new SmsChannel());
+
+notificationService.sendNotification('email', 'Your order has shipped!', 'user@example.com');
+notificationService.sendNotification('sms', 'Your order has shipped!', '+15551234567');
+
+// Adding a new channel (e.g., Push Notification) does not require modifying NotificationService
+class PushNotificationChannel implements INotificationChannel {
+  async send(message: string, recipient: string): Promise<void> {
+    console.log(`Sending push notification to ${recipient}: ${message}`);
+    // ... actual push notification logic
+  }
+}
+notificationService.registerChannel('push', new PushNotificationChannel());
+notificationService.sendNotification('push', 'New message!', 'user-device-id');
+```
+**Benefits**: `NotificationService` remains unchanged when new notification channels are added. This reduces the risk of introducing bugs into existing, tested code.
+
+### Question 9: How does the Dependency Inversion Principle (DIP) facilitate loose coupling and testability?
+**Difficulty**: Advanced
+**Category**: DIP
+
+**Answer**: DIP states that:
+1.  High-level modules should not depend on low-level modules. Both should depend on abstractions.
+2.  Abstractions should not depend on details. Details should depend on abstractions.
+
+In practice, this means services (high-level) should depend on interfaces (abstractions) rather than concrete implementations (low-level modules like specific database drivers).
+
+**How it helps**:
+*   **Loose Coupling**: By depending on abstractions, components are not tightly bound to specific implementations. If the underlying database changes (e.g., from MongoDB to PostgreSQL), the `UserService` doesn't need to change, only the `UserRepository` implementation.
+*   **Testability**: During testing, you can easily "inject" mock or stub implementations of the abstractions, allowing you to test the high-level logic in isolation without needing to set up real databases or external services.
+
+**Example (Node.js with TypeScript interfaces for clarity):**
+```typescript
+// user.repository.interface.ts (Abstraction)
+interface IUserRepository {
+  findById(id: string): Promise<any>;
+  create(user: any): Promise<any>;
+}
+
+// mongo.user.repository.ts (Low-level detail implementing abstraction)
+class MongoUserRepository implements IUserRepository {
+  constructor(private mongoClient: any) {}
+  async findById(id: string) {
+    return this.mongoClient.db('users').collection('users').findOne({ _id: id });
+  }
+  async create(user: any) {
+    return this.mongoClient.db('users').collection('users').insertOne(user);
+  }
+}
+
+// postgres.user.repository.ts (Another low-level detail implementing abstraction)
+class PostgresUserRepository implements IUserRepository {
+  constructor(private pgPool: any) {}
+  async findById(id: string) {
+    const res = await this.pgPool.query('SELECT * FROM users WHERE id = $1', [id]);
+    return res.rows[0];
+  }
+  async create(user: any) {
+    const res = await this.pgPool.query('INSERT INTO users (id, name, email) VALUES ($1, $2, $3)', [user.id, user.name, user.email]);
+    return res.rows[0];
+  }
+}
+
+// user.service.ts (High-level module depending on abstraction)
+class UserService {
+  constructor(private userRepository: IUserRepository) {} // Depends on interface
+
+  async getUser(id: string) {
+    return this.userRepository.findById(id);
+  }
+
+  async addUser(userData: any) {
+    return this.userRepository.create(userData);
+  }
+}
+
+// Application startup (Dependency Injection)
+// const mongoClient = // ... initialize MongoDB client
+// const postgresPool = // ... initialize PostgreSQL pool
+
+// const userRepository = new MongoUserRepository(mongoClient); // Choose implementation
+const userRepository = new PostgresUserRepository(postgresPool); // Easily swap implementation
+
+const userService = new UserService(userRepository); // Inject dependency
+
+// Testing (injecting a mock)
+class MockUserRepository implements IUserRepository {
+  findById = jest.fn();
+  create = jest.fn();
+}
+
+describe('UserService', () => {
+  let userService: UserService;
+  let mockRepo: MockUserRepository;
+
+  beforeEach(() => {
+    mockRepo = new MockUserRepository();
+    userService = new UserService(mockRepo);
+  });
+
+  it('should get user by id', async () => {
+    mockRepo.findById.mockResolvedValue({ id: '1', name: 'Test User' });
+    const user = await userService.getUser('1');
+    expect(user).toEqual({ id: '1', name: 'Test User' });
+    expect(mockRepo.findById).toHaveBeenCalledWith('1');
+  });
+});
+```
+
+## Common Violations and How to Fix Them
+
+### God Classes
+**Problem**: Classes that do too much
+**Solution**: Apply SRP by extracting responsibilities
+
+### Tight Coupling
+**Problem**: Classes directly depend on concrete implementations
+**Solution**: Apply DIP by depending on abstractions
+
+### Rigid Inheritance
+**Problem**: Inheritance hierarchies that are hard to extend
+**Solution**: Apply OCP by using composition and interfaces
+
+### Fat Interfaces
+**Problem**: Interfaces with too many methods
+**Solution**: Apply ISP by splitting interfaces
+
+## Tools and Libraries
+
+- **TypeScript** - For interfaces and type safety
+- **InversifyJS** - Dependency injection container
+- **Awilix** - Another DI container for Node.js
+- **ESLint** - Can help enforce some principles through rules
+
 ## Common Violations and How to Fix Them
 
 ### God Classes

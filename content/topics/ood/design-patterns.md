@@ -646,6 +646,303 @@ A: Several approaches:
 **Q: Explain how middleware pattern works in Express.js.**
 A: Middleware functions execute sequentially, each having access to request, response, and next function. They can modify the request/response or terminate the chain.
 
+##BBt PtPcs
+
+1. o' ovusepe * - A3.t-mAppl- themswh  dihtynsoltoplprlm
+2.**Udndrmfis**-Choot.pigc -peea rnbitnsthke e hioh
+3.t**Krapam ttimpln**-Ptrsshldmkmnb,W*ov -nnpigxlems complex
+4.4**C Noi* rNNofenjAvpcfic**-Lvsrar pb i[t-Sy phneernseckvEvsncEt
+5.v**ist thsi ugsRs** -tP tIe(tscIca UddSvomplexii  tntpity/tnde this.userRepository = userRepository;
+  }
+CommMk
+
+1. Psanfop' takuere-cUs = epUserSiussy
+2.**Wrgpukrhoi Pten-Ntudrndigwh oswhh paer
+3Ov-enginer-Mkimplplm
+4.renIgn eayi Nodf.jairice, cijavas/- Ndeefa coe tysNoto.jsrs-mom)or [Security Monitoring](../security-monitoring/security-monitoring-comprehensive.md) topics)
+5.ls PoorierrBr handaker {-Nnsderirorai ptpt .n*imati
+
+##AdvdPatrn f cpDir.r bu/SystBrfOvrvew)
+
+Wilesmohsrvere dep [SymDsg](./yte-s/icrsvic-rchtur,'utkneevchcxfsignpttn
+
+###ttjecsnystem ino pools so that if one fails, others can continue to function. Prevents cascading failures by limiting resource consumption.
+
+chiquerededniddafrmoutsd thrsuve dbh clssfromolocplgdby  constructor() { /* ... */ }
+uteCriticalOperation(operation) { /* ... */ }
+}
+```NDI
+OldUsrSrvice
+##aorsncor(
+is.useRepsitory= UseRposiry();//Tght couig
+Manages distributed transactions across multiple services to ensure data consistency in a microservices architecture. It involves a sequence of local transactions where each transaction updates data and publishes an event to trigger the next step.
+
+```javascript
+// WiehdDIe(Conntauo oQeI jnvtion)nt Streaming](./message-queues-event-streaming.md) or [Microservices Architecture](../system-design/microservices-architecture.md) topics)
+class NSwUseragaOrchestrator {
+  aonstnuctorpusorRepoOitoryrde}//Dncy injc
+```hi.Repotry= ueRposiory
+
+### Question 7: Describe the Factory Pattern and when it is useful.
+**Difficulty**: Intermediate
+**Category**: Creational Patterns
+
+**Answer**: The Factory Pattern is a creational design pattern that provides an interface for creating objects in a superclass, but allows subclasses to alter the type of objects that will be created. It's useful when:
+*   You don't know beforehand what exact type of objects your code should work with.
+*   You want to encapsulate the object creation logic, making it easier to change or extend.
+*   You want to decouple the client code from the concrete classes it instantiates.
+
+**Example**:
+```javascript
+class Car {
+  constructor(model) { this.model = model; }
+  drive() { console.log(`${this.model} is driving.`); }
+}
+
+class Truck {
+  constructor(model) { this.model = model; }
+  haul() { console.log(`${this.model} is hauling.`); }
+}
+
+class VehicleFactory {
+  createVehicle(type, model) {
+    if (type === 'car') {
+      return new Car(model);
+    } else if (type === 'truck') {
+      return new Truck(model);
+    }
+    throw new Error('Unknown vehicle type');
+  }
+}
+
+const factory = new VehicleFactory();
+const myCar = factory.createVehicle('car', 'Tesla Model 3');
+myCar.drive(); // Tesla Model 3 is driving.
+```
+
+### Question 8: What is the Singleton Pattern, and what are its pros and cons in Node.js?
+**Difficulty**: Intermediate
+**Category**: Creational Patterns
+
+**Answer**: The Singleton Pattern ensures that a class has only one instance and provides a global point of access to that instance.
+
+**Pros**:
+*   **Controlled Access**: Ensures only one instance, preventing multiple conflicting instances.
+*   **Resource Saving**: Useful for managing shared resources (e.g., database connections, configuration objects) to avoid creating multiple expensive instances.
+*   **Global Access**: Provides a single point of access, which can be convenient.
+
+**Cons**:
+*   **Global State**: Introduces global state, which can make testing difficult and lead to hidden dependencies.
+*   **Tight Coupling**: Can lead to tight coupling if not used carefully, as components directly depend on the single instance.
+*   **Testability Issues**: Hard to mock or replace the singleton instance in tests.
+*   **Concurrency Issues**: In multi-threaded environments (like Node.js with Worker Threads if not properly managed), race conditions can occur if the instance creation is not thread-safe.
+
+**Node.js Specifics**: Due to Node.js's module caching mechanism (CommonJS), any module exported as a single object (e.g., `module.exports = new MyClass();`) effectively acts as a singleton *within the scope of that module loader*. However, this doesn't guarantee a true application-wide singleton across multiple processes (e.g., in a `cluster` setup) or separate module loaders.
+
+### Question 9: Describe the Adapter Pattern and provide a scenario where it would be useful.
+**Difficulty**: Intermediate
+**Category**: Structural Patterns
+
+**Answer**: The Adapter Pattern allows objects with incompatible interfaces to collaborate. It acts as a wrapper between two objects, converting the interface of one class into another interface that the client expects.
+
+**Scenario**: Integrating a new payment gateway into an existing e-commerce application. The existing application expects a specific `processPayment(orderId, amount)` interface, but the new payment gateway provides a `charge(transactionDetails)` method. An Adapter can be created to bridge this gap.
+
+**Example**:
+```javascript
+// Existing interface expected by our application
+class PaymentGateway {
+  processPayment(orderId, amount) {
+    throw new Error('Method not implemented');
+  }
+}
+
+// New external payment service with a different interface
+class StripeService {
+  charge(details) {
+    console.log(`Stripe charging: ${details.amount} for order ${details.orderId}`);
+    return { status: 'succeeded', transactionId: 'stripe_tx_123' };
+  }
+}
+
+// Adapter to make StripeService compatible with PaymentGateway interface
+class StripeAdapter extends PaymentGateway {
+  constructor(stripeService) {
+    super();
+    this.stripeService = stripeService;
+  }
+
+  processPayment(orderId, amount) {
+    const details = {
+      orderId: orderId,
+      amount: amount,
+      currency: 'USD' // Assume default currency
+    };
+    const result = this.stripeService.charge(details);
+    if (result.status === 'succeeded') {
+      return { success: true, transactionId: result.transactionId };
+    }
+    return { success: false, error: 'Payment failed' };
+  }
+}
+
+// Client code using the unified interface
+const stripeGateway = new StripeAdapter(new StripeService());
+stripeGateway.processPayment('ORD-001', 100); // Works with the expected interface
+```
+
+### Question 10: How does the Strategy Pattern improve flexibility in an application?
+**Difficulty**: Intermediate
+**Category**: Behavioral Patterns
+
+**Answer**: The Strategy Pattern defines a family of algorithms, encapsulates each one, and makes them interchangeable. This pattern allows the algorithm to vary independently from clients that use it.
+
+**How it improves flexibility**:
+*   **Decoupling**: It decouples the client from the implementation details of an algorithm. The client only needs to know the interface of the strategy.
+*   **Easy Algorithm Switching**: You can change the algorithm used at runtime without modifying the client code.
+*   **Open/Closed Principle**: New algorithms (strategies) can be added easily without modifying existing code, adhering to the Open/Closed Principle.
+*   **Avoids Conditional Logic**: Reduces large conditional statements (if/else if or switch) in the client code that would be used to select an algorithm.
+
+**Example**:
+```javascript
+// Strategy Interface (implicit in JS)
+// class PaymentStrategy { pay(amount) { throw new Error('Method not implemented'); } }
+
+// Concrete Strategies
+class CreditCardPayment {
+  pay(amount) { console.log(`Paid $${amount} with Credit Card`); }
+}
+
+class PayPalPayment {
+  pay(amount) { console.log(`Paid $${amount} with PayPal`); }
+}
+
+class BankTransferPayment {
+  pay(amount) { console.log(`Paid $${amount} with Bank Transfer`); }
+}
+
+// Context that uses a Strategy
+class ShoppingCart {
+  constructor(paymentStrategy) {
+    this.paymentStrategy = paymentStrategy;
+  }
+
+  setPaymentStrategy(strategy) {
+    this.paymentStrategy = strategy;
+  }
+
+  checkout(amount) {
+    this.paymentStrategy.pay(amount);
+  }
+}
+
+// Usage
+const cart = new ShoppingCart(new CreditCardPayment());
+cart.checkout(100); // Paid $100 with Credit Card
+
+cart.setPaymentStrategy(new PayPalPayment());
+cart.checkout(50); // Paid $50 with PayPal
+```
+
+### Question 11: Explain the Command Pattern and provide a use case demonstrating its benefits.
+**Difficulty**: Advanced
+**Category**: Behavioral Patterns
+
+**Answer**: The Command Pattern encapsulates a request as an object, thereby letting you parameterize clients with different requests, queue or log requests, and support undoable operations.
+
+**Benefits**:
+*   **Decoupling**: Decouples the object that invokes the operation from the object that knows how to perform it.
+*   **Undo/Redo Functionality**: Easily implement undo/redo mechanisms by storing commands in a history.
+*   **Queueing/Logging**: Commands can be queued, logged, or executed remotely.
+*   **Flexibility**: New commands can be added without changing existing code.
+
+**Use Case: Text Editor with Undo/Redo**
+In a text editor, every action (typing, deleting, formatting) can be represented as a command.
+
+```javascript
+// Receiver (knows how to perform operations)
+class TextEditor {
+  constructor(content = '') {
+    this.content = content;
+  }
+
+  type(text) {
+    this.content += text;
+    console.log(`Typed: "${text}". Current content: "${this.content}"`);
+  }
+
+  deleteLastChar() {
+    this.content = this.content.slice(0, -1);
+    console.log(`Deleted last char. Current content: "${this.content}"`);
+  }
+}
+
+// Command Interface (implicit in JS)
+// class Command { execute(); undo(); }
+
+// Concrete Command for typing
+class TypeCommand {
+  constructor(editor, text) {
+    this.editor = editor;
+    this.text = text;
+  }
+
+  execute() {
+    this.editor.type(this.text);
+  }
+
+  undo() {
+    this.editor.content = this.editor.content.slice(0, -this.text.length);
+    console.log(`Undo type. Content: "${this.editor.content}"`);
+  }
+}
+
+// Invoker (manages commands and history)
+class CommandManager {
+  constructor() {
+    this.history = [];
+    this.pointer = -1; // Points to the last executed command
+  }
+
+  execute(command) {
+    // Clear redo history if new command is executed
+    this.history = this.history.slice(0, this.pointer + 1);
+    this.history.push(command);
+    this.pointer++;
+    command.execute();
+  }
+
+  undo() {
+    if (this.pointer >= 0) {
+      const command = this.history[this.pointer];
+      command.undo();
+      this.pointer--;
+    } else {
+      console.log('Nothing to undo.');
+    }
+  }
+
+  redo() {
+    if (this.pointer < this.history.length - 1) {
+      this.pointer++;
+      const command = this.history[this.pointer];
+      command.execute();
+    } else {
+      console.log('Nothing to redo.');
+    }
+  }
+}
+
+// Usage
+const editor = new TextEditor();
+const manager = new CommandManager();
+
+manager.execute(new TypeCommand(editor, 'Hello'));
+manager.execute(new TypeCommand(editor, ' World'));
+manager.undo(); // Undo " World"
+manager.redo(); // Redo " World"
+manager.execute(new TypeCommand(editor, '!!!'));
+```
+
 ## Best Practices
 
 1. **Don't overuse patterns** - Apply them when they solve real problems
@@ -662,9 +959,100 @@ A: Middleware functions execute sequentially, each having access to request, res
 4. **Ignoring Node.js conventions** - Not following Node.js idioms
 5. **Poor error handling** - Not considering error scenarios in pattern implementation
 
+## Advanced Patterns for Distributed Systems (Brief Overview)
+
+While some of these are covered in depth in [System Design topics](../system-design/microservices-architecture.md), it's useful to know their relevance in the context of design patterns.
+
+### Dependency Injection Pattern
+
+A technique where dependencies are provided to a class from the outside rather than created by the class itself. This promotes loose coupling and testability.
+
+```javascript
+// No DI
+class OldUserService {
+  constructor() {
+    this.userRepository = new UserRepository(); // Tight coupling
+  }
+}
+
+// With DI (Constructor Injection)
+class NewUserService {
+  constructor(userRepository) { // Dependency is injected
+    this.userRepository = userRepository;
+  }
+}
+
+// Usage
+const userRepository = new MySqlUserRepository(); // Or MongoUserRepository
+const userService = new NewUserService(userRepository);
+```
+
+### Circuit Breaker Pattern
+
+Prevents a system from repeatedly trying to access a failing remote service, which could lead to cascading failures. When failures exceed a threshold, the circuit "breaks," and subsequent calls fail immediately.
+
+```javascript
+// (See detailed implementation in [Microservices Architecture](../system-design/microservices-architecture.md) or [Security Monitoring](../security-monitoring/security-monitoring-comprehensive.md) topics)
+class CircuitBreaker {
+  constructor(options) { /* ... */ }
+  async execute(operation) { /* ... */ }
+}
+```
+
+### Bulkhead Pattern
+
+Isolates elements of a system into pools so that if one fails, others can continue to function. Prevents cascading failures by limiting resource consumption.
+
+```javascript
+// (See detailed implementation in [Scalability Patterns](../system-design/scalability-patterns-microservices.md) topic)
+class BulkheadService {
+  constructor() { /* ... */ }
+  async executeCriticalOperation(operation) { /* ... */ }
+}
+```
+
+### Saga Pattern
+
+Manages distributed transactions across multiple services to ensure data consistency in a microservices architecture. It involves a sequence of local transactions where each transaction updates data and publishes an event to trigger the next step.
+
+```javascript
+// (See detailed implementation in [Message Queues and Event Streaming](./message-queues-event-streaming.md) or [Microservices Architecture](../system-design/microservices-architecture.md) topics)
+class OrderSagaOrchestrator {
+  async processOrder(orderData) { /* ... */ }
+}
+```
+
 ## Resources for Further Learning
 
 - "Design Patterns: Elements of Reusable Object-Oriented Software" by Gang of Four
 - "Learning JavaScript Design Patterns" by Addy Osmani
 - Node.js documentation on EventEmitter
-- Express.js middleware documentation
+
+- "Ussgn
+ctnsttusslReaosetore = eftrMySq ULeiR aosiSory();i// Or MoegoUitrR"positoryddy Osmani
+Node. smtrion on v=-nswNewUr(uRpository)```###Ciuit Braker ttr
+
+Pvesaysmfm peedlyingtoaccea iingm, whi could le o cascdngfalu When filreexahhold,hciui"bk," subsqetalliimdiaey.```javascript(Seetaildmplemetaioni[McrosviAchtcur](../ssm-sig/micos-achtcurd[SuriyMonitorg](../sriy-montrig/cui-monioig-coehensi.md)topics)
+cass CrcuBreaker {
+costructor(os) { / ... / }
+ asyc xcue(oprin) { / ... / }
+}
+```
+
+###ulkhdIoleefsyo poosoth if oefi,oscncontutfunton. Prveccadngfalumitirsrconsumpto.
+
+```javascrip
+//(Seedeaild[ScabliyPattrs](../sysem-desig/scaabilit-patters-microsrvic.md)pic)
+classBuladSvi{
+conucor(){/.../}
+sycxcCraratio(pato) { / ... /}
+}
+```
+
+###SaPtrn
+
+Mgdsribetranacosarss multiplsvcesuatacssency  mrosrvihecture. It vove  squcolcalransatoswreachtransatin upatsdaanpulish an venttriggr heextsep(edeildeii[essagQuus aEveemin](./msge-queue-evnt-seig.dor[MirrvcesArchcue](../ste-dsig/irervics-rchtecture.m)tpcsOrderSagOchetorscproesOrder(rdrDat)/*...*/
+```##Resurcs forFurer Lerning
+
+-"DignPrn:Elemesf Reuable Obje-Oied ofwa" bGangofFour
+-"Learnng Javcip DsinPrns" bAddyOsmani-Node.j documntion on EvEmi-Expresjs iddlwadocumenion
