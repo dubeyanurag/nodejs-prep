@@ -63,7 +63,7 @@ export default function AppLayout({
           )}
 
           {/* Main Content */}
-          <main className={`flex-1 min-w-0 ${showSidebar && !isHome ? '' : 'max-w-4xl mx-auto'}`}>
+          <main className={`flex-1 min-w-0 ${showSidebar && !isHome ? '' : 'max-w-none'}`}>
             <div className="bg-white rounded-lg shadow-sm">
               {children}
             </div>

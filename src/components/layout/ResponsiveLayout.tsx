@@ -15,7 +15,7 @@ export default function ResponsiveLayout({
 }: ResponsiveLayoutProps) {
   return (
     <div className={`min-h-screen bg-gray-50 ${className}`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col lg:flex-row gap-8 py-8">
           {/* Main Content */}
           <main className="flex-1 min-w-0">

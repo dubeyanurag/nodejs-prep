@@ -71,39 +71,65 @@ export default function DiagramRenderer({
   const [error, setError] = useState<string | null>(null);
   const [scale, setScale] = useState(1);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
 
   // Get diagram data
   const diagramData = diagram || (diagramId ? sampleDiagrams[diagramId] : null);
 
-  useEffect(() => {
-    if (!diagramData || !svgRef.current) return;
-
-    const renderMermaidDiagram = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
+  const renderMermaidDiagram = React.useCallback(async (attempt = 1) => {
+    if (!diagramData) return;
+    
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      // Add a small delay to ensure DOM is ready
+      await new Promise(resolve => setTimeout(resolve, 100 * attempt));
+      
+      // Initialize Mermaid
+      initializeMermaid();
+      
+      // Add another small delay after initialization
+      await new Promise(resolve => setTimeout(resolve, 50));
+      
+      // Render the diagram
+      const svgString = await renderDiagram(diagramData.mermaidCode, diagramData.id);
+      
+      // Insert the rendered SVG into the DOM
+      if (svgRef.current) {
+        svgRef.current.innerHTML = svgString;
         
-        // Initialize Mermaid
-        initializeMermaid();
-        
-        // Render the diagram
-        const svgString = await renderDiagram(diagramData.mermaidCode, diagramData.id);
-        
-        // Insert the rendered SVG into the DOM
-        if (svgRef.current) {
-          svgRef.current.innerHTML = svgString;
+        // Ensure SVG is properly sized
+        const svgElement = svgRef.current.querySelector('svg');
+        if (svgElement) {
+          svgElement.style.maxWidth = '100%';
+          svgElement.style.height = 'auto';
         }
-        
-        setIsLoading(false);
-      } catch (err) {
-        console.error('Error rendering diagram:', err);
+      }
+      
+      setIsLoading(false);
+      setRetryCount(0); // Reset retry count on success
+    } catch (err) {
+      console.error(`Error rendering diagram (attempt ${attempt}):`, err);
+      
+      // Retry up to 3 times with exponential backoff
+      if (attempt < 3) {
+        setTimeout(() => {
+          setRetryCount(attempt);
+          renderMermaidDiagram(attempt + 1);
+        }, 1000 * attempt);
+      } else {
         setError(err instanceof Error ? err.message : 'Failed to render diagram');
         setIsLoading(false);
       }
-    };
-
-    renderMermaidDiagram();
+    }
   }, [diagramData]);
+
+  useEffect(() => {
+    if (diagramData) {
+      renderMermaidDiagram();
+    }
+  }, [diagramData, renderMermaidDiagram]);
 
   const handleZoomIn = () => {
     setScale(prev => Math.min(prev + 0.2, 3));
@@ -196,7 +222,10 @@ export default function DiagramRenderer({
       <div className={`bg-gray-50 border border-gray-200 rounded-lg p-8 ${className}`}>
         <div className="flex items-center justify-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          <span className="ml-3 text-gray-600">Rendering diagram...</span>
+          <span className="ml-3 text-gray-600">
+            Rendering diagram...
+            {retryCount > 0 && ` (attempt ${retryCount + 1})`}
+          </span>
         </div>
       </div>
     );
@@ -204,15 +233,39 @@ export default function DiagramRenderer({
 
   if (error) {
     return (
-      <div className={`bg-red-50 border border-red-200 rounded-lg p-6 ${className}`}>
-        <div className="flex items-center gap-3">
-          <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-          </svg>
-          <div>
-            <h4 className="font-medium text-red-900">Failed to render diagram</h4>
-            <p className="text-sm text-red-700">{error}</p>
+      <div className={`bg-red-50 border border-red-200 rounded-lg ${className}`}>
+        <div className="p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+            <div>
+              <h4 className="font-medium text-red-900">Failed to render diagram</h4>
+              <p className="text-sm text-red-700">{error}</p>
+            </div>
           </div>
+          
+          {/* Retry button */}
+          <button
+            onClick={() => {
+              setError(null);
+              setRetryCount(0);
+              renderMermaidDiagram();
+            }}
+            className="mt-3 px-4 py-2 bg-red-600 text-white text-sm font-medium rounded hover:bg-red-700 transition-colors"
+          >
+            Retry Rendering
+          </button>
+          
+          {/* Show raw mermaid code as fallback */}
+          <details className="mt-4">
+            <summary className="text-sm font-medium text-red-800 cursor-pointer hover:text-red-900">
+              Show diagram code
+            </summary>
+            <pre className="mt-2 p-3 bg-red-100 rounded text-sm text-red-900 overflow-x-auto">
+              <code>{diagramData?.mermaidCode}</code>
+            </pre>
+          </details>
         </div>
       </div>
     );

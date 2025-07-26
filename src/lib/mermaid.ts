@@ -64,12 +64,19 @@ const mermaidConfig = {
   },
 };
 
+let isInitialized = false;
+
 /**
  * Initialize Mermaid with custom configuration
  */
 export function initializeMermaid(): void {
-  if (typeof window !== 'undefined') {
-    mermaid.initialize(mermaidConfig);
+  if (typeof window !== 'undefined' && !isInitialized) {
+    try {
+      mermaid.initialize(mermaidConfig);
+      isInitialized = true;
+    } catch (error) {
+      console.error('Failed to initialize Mermaid:', error);
+    }
   }
 }
 
@@ -85,16 +92,39 @@ export async function renderDiagram(
       throw new Error('Mermaid can only be rendered in the browser');
     }
 
+    // Ensure Mermaid is initialized
+    if (!isInitialized) {
+      initializeMermaid();
+    }
+
     // Validate the diagram definition
     if (!definition.trim()) {
       throw new Error('Empty diagram definition');
     }
 
+    // Clean up the definition
+    const cleanDefinition = definition.trim();
+
     // Generate a unique ID for the diagram
-    const diagramId = `mermaid-${elementId}-${Date.now()}`;
+    const diagramId = `mermaid-${elementId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
-    // Render the diagram
-    const { svg } = await mermaid.render(diagramId, definition);
+    // Validate diagram syntax before rendering
+    const validation = validateDiagram(cleanDefinition);
+    if (!validation.isValid) {
+      throw new Error(validation.error || 'Invalid diagram syntax');
+    }
+    
+    // Render the diagram with timeout
+    const renderPromise = mermaid.render(diagramId, cleanDefinition);
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => reject(new Error('Diagram rendering timeout')), 10000);
+    });
+    
+    const { svg } = await Promise.race([renderPromise, timeoutPromise]);
+    
+    if (!svg) {
+      throw new Error('No SVG returned from Mermaid');
+    }
     
     return svg;
   } catch (error) {

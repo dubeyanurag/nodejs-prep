@@ -49,7 +49,7 @@ export default function Home() {
 
         {/* Features Section */}
         <div className="py-12">
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-none px-4">
             <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
               Everything You Need to Succeed
             </h2>
@@ -106,7 +106,7 @@ export default function Home() {
 
         {/* Study Tools Section */}
         <div className="py-12 border-t border-gray-200">
-          <div className="max-w-4xl mx-auto text-center">
+          <div className="max-w-none px-4 text-center">
             <h2 className="text-3xl font-bold text-gray-900 mb-8">
               Interactive Study Tools
             </h2>

@@ -15,7 +15,7 @@ interface TopicPageProps {
 export default function TopicPage({ topic, categorySlug = '', className = '' }: TopicPageProps) {
   return (
     <div className={`${className}`}>
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="px-4 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Main Content */}
           <div className="flex-1 min-w-0">
