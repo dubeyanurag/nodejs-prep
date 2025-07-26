@@ -39,11 +39,11 @@ export default function TopicPageWithTOC({
 
   return (
     <AppLayout showSidebar={false}>
-      <div className="flex flex-col lg:flex-row gap-8">
+      <div className="flex flex-col lg:flex-row gap-8 max-w-none">
         {/* Main Content */}
-        <main className="flex-1 min-w-0">
+        <main className="flex-1 min-w-0 max-w-none">
           <div className="bg-white rounded-lg shadow-sm">
-            <div className="p-6">
+            <div className="p-6 lg:p-8">
               {/* Topic Navigation */}
               <div className="mb-6">
                 <TopicNavigation 
@@ -58,17 +58,19 @@ export default function TopicPageWithTOC({
               </div>
 
               {/* Main Content */}
-              <MarkdownTopicPage 
-                content={content}
-                metadata={metadata}
-                onHeadingsExtracted={handleHeadingsExtracted}
-              />
+              <div className="max-w-none">
+                <MarkdownTopicPage 
+                  content={content}
+                  metadata={metadata}
+                  onHeadingsExtracted={handleHeadingsExtracted}
+                />
+              </div>
 
               {/* Related topics */}
               {relatedTopics.length > 0 && (
                 <div className="mt-12 border-t border-gray-200 pt-8">
                   <h2 className="text-2xl font-bold text-gray-900 mb-6">Related Topics</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
                     {relatedTopics.map(relatedTopic => (
                       <a
                         key={`${relatedTopic.category}-${relatedTopic.slug}`}
@@ -96,8 +98,8 @@ export default function TopicPageWithTOC({
         </main>
 
         {/* Right Sidebar - Table of Contents */}
-        <aside className="hidden lg:block lg:w-80 flex-shrink-0">
-          <div className="sticky top-6">
+        <aside className="hidden lg:block lg:w-80 xl:w-96 flex-shrink-0">
+          <div className="sticky top-6 h-[calc(100vh-8rem)]">
             <TableOfContents headings={headings} />
           </div>
         </aside>

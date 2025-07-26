@@ -71,16 +71,18 @@ export default function TableOfContents({ headings, className = '' }: TableOfCon
   }
 
   return (
-    <nav className={`bg-white rounded-lg shadow-sm border ${className}`}>
-      <div className="p-4">
+    <nav className={`bg-white rounded-lg shadow-sm border h-[calc(100vh-8rem)] flex flex-col ${className}`}>
+      <div className="p-4 flex-shrink-0">
         <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center">
           <svg className="w-4 h-4 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
           </svg>
           On This Page
         </h3>
-        
-        <div className="space-y-1 max-h-96 overflow-y-auto">
+      </div>
+      
+      <div className="flex-1 overflow-y-auto px-4 pb-4">
+        <div className="space-y-1">
           {headings.map((heading) => (
             <button
               key={heading.id}

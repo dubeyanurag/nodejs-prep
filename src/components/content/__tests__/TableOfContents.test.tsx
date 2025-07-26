@@ -66,6 +66,15 @@ describe('TableOfContents', () => {
     expect(screen.getByText('Configuration')).toBeInTheDocument();
   });
 
+  it('renders with full height layout', () => {
+    const { container } = render(<TableOfContents headings={mockHeadings} />);
+    
+    const nav = container.querySelector('nav');
+    expect(nav).toHaveClass('h-[calc(100vh-8rem)]');
+    expect(nav).toHaveClass('flex');
+    expect(nav).toHaveClass('flex-col');
+  });
+
   it('does not render when no headings provided', () => {
     const { container } = render(<TableOfContents headings={[]} />);
     expect(container.firstChild).toBeNull();
