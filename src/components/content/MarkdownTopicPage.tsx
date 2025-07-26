@@ -1,22 +1,52 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { ContentMetadata } from '../../lib/content-loader-server';
+import DiagramRenderer from './DiagramRenderer';
+import { Diagram } from '@/types/content';
+import { initializeMermaid } from '@/lib/mermaid';
+import { extractHeadings, generateUniqueAnchor, HeadingItem } from '../../lib/utils/markdown-headings';
 
 interface MarkdownTopicPageProps {
   content: string;
   metadata: ContentMetadata;
   className?: string;
+  onHeadingsExtracted?: (headings: HeadingItem[]) => void;
 }
 
 export default function MarkdownTopicPage({ 
   content, 
   metadata, 
-  className = '' 
+  className = '',
+  onHeadingsExtracted
 }: MarkdownTopicPageProps) {
+  // Extract headings from content
+  const headings = useMemo(() => {
+    const extractedHeadings = extractHeadings(content);
+    const existingAnchors = new Set<string>();
+    
+    // Generate unique anchors for each heading
+    return extractedHeadings.map(heading => ({
+      ...heading,
+      anchor: generateUniqueAnchor(heading.title, existingAnchors)
+    }));
+  }, [content]);
+
+  // Initialize mermaid when component mounts
+  useEffect(() => {
+    initializeMermaid();
+  }, []);
+
+  // Notify parent component about extracted headings
+  useEffect(() => {
+    if (onHeadingsExtracted) {
+      onHeadingsExtracted(headings);
+    }
+  }, [headings, onHeadingsExtracted]);
+
   return (
     <div className={`max-w-4xl mx-auto ${className}`}>
       {/* Topic Header */}
@@ -80,6 +110,26 @@ export default function MarkdownTopicPage({
             code({ node, className, children, ...props }: any) {
               const match = /language-(\w+)/.exec(className || '');
               const inline = props.inline;
+              
+              // Handle mermaid diagrams
+              if (!inline && match && match[1] === 'mermaid') {
+                const mermaidCode = String(children).replace(/\n$/, '');
+                const diagram: Diagram = {
+                  id: `diagram-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                  type: 'flowchart', // Will be auto-detected by DiagramRenderer
+                  title: 'Diagram',
+                  description: 'Interactive diagram',
+                  mermaidCode,
+                  explanation: ''
+                };
+                
+                return (
+                  <div className="my-6">
+                    <DiagramRenderer diagram={diagram} />
+                  </div>
+                );
+              }
+              
               return !inline && match ? (
                 <SyntaxHighlighter
                   style={tomorrow as any}
@@ -96,26 +146,54 @@ export default function MarkdownTopicPage({
                 </code>
               );
             },
-            h1: ({ children }) => (
-              <h1 className="text-3xl font-bold text-gray-900 mt-8 mb-4 first:mt-0">
-                {children}
-              </h1>
-            ),
-            h2: ({ children }) => (
-              <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4 border-b border-gray-200 pb-2">
-                {children}
-              </h2>
-            ),
-            h3: ({ children }) => (
-              <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">
-                {children}
-              </h3>
-            ),
-            h4: ({ children }) => (
-              <h4 className="text-lg font-semibold text-gray-900 mt-4 mb-2">
-                {children}
-              </h4>
-            ),
+            h1: ({ children }) => {
+              const text = String(children);
+              const heading = headings.find(h => h.title === text && h.level === 1);
+              return (
+                <h1 
+                  id={heading?.anchor}
+                  className="text-3xl font-bold text-gray-900 mt-8 mb-4 first:mt-0 scroll-mt-6"
+                >
+                  {children}
+                </h1>
+              );
+            },
+            h2: ({ children }) => {
+              const text = String(children);
+              const heading = headings.find(h => h.title === text && h.level === 2);
+              return (
+                <h2 
+                  id={heading?.anchor}
+                  className="text-2xl font-bold text-gray-900 mt-8 mb-4 border-b border-gray-200 pb-2 scroll-mt-6"
+                >
+                  {children}
+                </h2>
+              );
+            },
+            h3: ({ children }) => {
+              const text = String(children);
+              const heading = headings.find(h => h.title === text && h.level === 3);
+              return (
+                <h3 
+                  id={heading?.anchor}
+                  className="text-xl font-semibold text-gray-900 mt-6 mb-3 scroll-mt-6"
+                >
+                  {children}
+                </h3>
+              );
+            },
+            h4: ({ children }) => {
+              const text = String(children);
+              const heading = headings.find(h => h.title === text && h.level === 4);
+              return (
+                <h4 
+                  id={heading?.anchor}
+                  className="text-lg font-semibold text-gray-900 mt-4 mb-2 scroll-mt-6"
+                >
+                  {children}
+                </h4>
+              );
+            },
             p: ({ children }) => (
               <p className="text-gray-700 leading-relaxed mb-4">
                 {children}
