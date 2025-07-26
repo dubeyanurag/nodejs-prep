@@ -2,7 +2,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Diagram } from '@/types/content';
-import { initializeMermaid, renderDiagram } from '@/lib/mermaid';
 
 interface DiagramRendererProps {
   diagram?: Diagram;
@@ -65,7 +64,6 @@ export default function DiagramRenderer({
   diagramId, 
   className = '' 
 }: DiagramRendererProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -83,17 +81,60 @@ export default function DiagramRenderer({
       setIsLoading(true);
       setError(null);
       
+      // Check if we're in the browser
+      if (typeof window === 'undefined') {
+        throw new Error('Not in browser environment');
+      }
+      
       // Add a small delay to ensure DOM is ready
       await new Promise(resolve => setTimeout(resolve, 100 * attempt));
       
+      // Dynamic import of mermaid
+      const mermaid = (await import('mermaid')).default;
+      
       // Initialize Mermaid
-      initializeMermaid();
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: 'default',
+        themeVariables: {
+          primaryColor: '#3B82F6',
+          primaryTextColor: '#1F2937',
+          primaryBorderColor: '#2563EB',
+          lineColor: '#6B7280',
+          secondaryColor: '#F3F4F6',
+          tertiaryColor: '#E5E7EB',
+          background: '#FFFFFF',
+          mainBkg: '#FFFFFF',
+          secondBkg: '#F9FAFB',
+          tertiaryBkg: '#F3F4F6',
+        },
+        flowchart: {
+          useMaxWidth: true,
+          htmlLabels: true,
+          curve: 'basis',
+        },
+        sequence: {
+          useMaxWidth: true,
+          diagramMarginX: 50,
+          diagramMarginY: 10,
+          actorMargin: 50,
+          width: 150,
+          height: 65,
+          boxMargin: 10,
+          boxTextMargin: 5,
+          noteMargin: 10,
+          messageMargin: 35,
+        },
+      });
       
       // Add another small delay after initialization
       await new Promise(resolve => setTimeout(resolve, 50));
       
+      // Generate a unique ID for the diagram
+      const diagramId = `mermaid-${diagramData.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      
       // Render the diagram
-      const svgString = await renderDiagram(diagramData.mermaidCode, diagramData.id);
+      const { svg: svgString } = await mermaid.render(diagramId, diagramData.mermaidCode.trim());
       
       // Insert the rendered SVG into the DOM
       if (svgRef.current) {
@@ -110,7 +151,7 @@ export default function DiagramRenderer({
       setIsLoading(false);
       setRetryCount(0); // Reset retry count on success
     } catch (err) {
-      console.error(`Error rendering diagram (attempt ${attempt}):`, err);
+      console.error(`DiagramRenderer: Error rendering diagram (attempt ${attempt}):`, err);
       
       // Retry up to 3 times with exponential backoff
       if (attempt < 3) {

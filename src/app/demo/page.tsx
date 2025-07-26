@@ -4,6 +4,7 @@ import AppLayout from '../../components/layout/AppLayout';
 import { PageHeader } from '../../components/layout/AppLayout';
 import { contentLoaderServer } from '../../lib/content-loader-server';
 import { withBasePath } from '../../lib/utils/path';
+import MermaidTest from '../../components/content/MermaidTest';
 
 export default function DemoPage() {
   const categories = contentLoaderServer.getCategories();
@@ -207,6 +208,12 @@ export default function DemoPage() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Mermaid Test */}
+        <div className="mt-12">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Mermaid Test</h2>
+          <MermaidTest />
         </div>
 
         {/* Content Loading Test */}
